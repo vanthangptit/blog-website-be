@@ -1,4 +1,7 @@
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function config() {
   const {
@@ -16,7 +19,9 @@ function config() {
     // GOOGLE_USER_VERIFIED: googleUserVerified,
   } = process.env;
 
-  const conf = JSON.parse(fs.readFileSync(`${__dirname}/../../conf/${envConf ?? 'development'}.json`).toString());
+  const conf = JSON.parse(
+    fs.readFileSync(`${__dirname}/../../conf/${envConf ?? 'development'}.json`).toString()
+  );
 
   return {
     ...conf,

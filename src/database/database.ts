@@ -8,7 +8,7 @@ export const connectDB = async () => {
     await mongoose.connect(`mongodb+srv://${dbUsername}:${dbPassword}@cluster0.aj3onsv.mongodb.net/${dbName}?retryWrites=true&w=majority`);
     console.log('MongoDB connected!');
   } catch (err: any) {
-    console.log('Error: ' + err.message);
+    console.log('Error::connectDatabaseFailure ' + err.message);
     process.exit(1);
   }
 };
