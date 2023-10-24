@@ -1,0 +1,19 @@
+{
+  "accessDomain": [ "http://localhost:3000" ],
+  "email": {
+    "from": "no-reply@nguyenthangdev.com",
+    "subject": {
+      "login": "Welcome to NTD, --Username--! Confirm Your Email",
+      "resetPassword": "Forgot password: One-time verification code"
+    },
+    "name": "NTD",
+    "color": "#bc2e1d",
+    "clickTrackingValue": "",
+    "url": "http://localhost:3000",
+    "urlLogin": "http://localhost:3000/login",
+    "mailVerificationUrl": "http://localhost:9200/auth/verify",
+    "mailChangeUrl": "http://localhost:9200/auth/change-email",
+    "resetPasswordUrl": "http://localhost:9200/auth/reset-password",
+    "termsOfServiceUrl": "https://nguyenthangdev.com/terms"
+  }
+}
