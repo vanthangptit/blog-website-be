@@ -7,7 +7,7 @@
     "log_date_format": "DD-MM-YYYY",
     "merge_logs": true,
     "min_uptime": 32000,
-    "watch": [ "./src/**/*.ts", "./dist/app.js"],
+    "watch": [ "./src" ],
     "watch_options": {
       "usePolling": true
     },

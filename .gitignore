@@ -50,3 +50,4 @@ npm-debug.log*
 .env
 node_modules
 logs
+dist

@@ -4,10 +4,11 @@
   "main": "dist/app.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p",
+    "build": "npx tsc",
     "dev": "ts-node-dev src/app.ts",
-    "start": "./node_modules/.bin/concurrently \"node src/app.ts\" \"yarn run pm2:file\"",
-    "pm2:file": "./node_modules/.bin/pm2-runtime start pm2-log-file.json"
+    "serve": "./node_modules/.bin/concurrently \"npx tsc --watch\"  \"yarn run pm2:file\"",
+    "start": "yarn run pm2:file",
+    "pm2:file": "./node_modules/.bin/pm2-docker start pm2-log-file.json"
   },
   "dependencies": {
     "@types/mongoose": "^5.11.97",
