@@ -9,6 +9,7 @@ import {
   toggleDisLikesCtrl,
 } from '../../controllers/posts/postController';
 import { isAuthenticated } from '../../middlewares';
+import { createPostValidation } from '../../domain/validations/PostValidation';
 
 const postRouter = express.Router();
 
@@ -49,6 +50,7 @@ postRouter.get(
  */
 postRouter.post(
   '/',
+  createPostValidation,
   isAuthenticated,
   createPostCtrl
 );
@@ -58,6 +60,7 @@ postRouter.post(
  */
 postRouter.put(
   '/:id',
+  createPostValidation,
   isAuthenticated,
   updatePostCtrl
 );

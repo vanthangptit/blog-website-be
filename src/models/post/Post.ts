@@ -8,13 +8,26 @@ import {
 } from 'mongoose';
 import { IUser } from '../user/User';
 
+type PostType =
+  'society' |
+  'sports' |
+  'technology' |
+  'traveling' |
+  'history' |
+  'learn' |
+  'lovely' |
+  'poem' |
+  'review' |
+  'life' |
+  'diary';
+
 export interface IPost extends Document {
   title: string
-  excerpt?: string
+  excerpt: string
   description: string
-  imageUrl?: string
+  imageUrl: string
   shortUrl: string
-  postType: string
+  postType: PostType
   writer: string
   isPublished: boolean
   category: Types.ObjectId
@@ -35,7 +48,7 @@ const PostSchema = new Schema<IPost>({
   },
   excerpt: {
     type: String,
-    // required: [true, 'Post excerpt is required'],
+    required: [true, 'Post excerpt is required'],
   },
   description: {
     type: String,
@@ -43,7 +56,7 @@ const PostSchema = new Schema<IPost>({
   },
   imageUrl: {
     type: String,
-    // required: [true, 'Post image is required'],
+    required: [true, 'Post image is required'],
   },
   shortUrl: {
     type: String,
@@ -53,7 +66,7 @@ const PostSchema = new Schema<IPost>({
   postType: {
     type: String,
     enum: ['society', 'sports', 'technology', 'traveling', 'history', 'learn', 'lovely', 'poem', 'review', 'life', 'diary'],
-    // required:  [true, 'Post type is required'],
+    required:  [true, 'Post type is required'],
   },
   writer: {
     type: String,

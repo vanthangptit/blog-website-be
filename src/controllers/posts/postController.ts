@@ -7,7 +7,11 @@ import { User } from '../../models/user/User';
 /**
  * Get posts
  */
-export const getAllPostCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllPostCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // Get all posts
     const posts = await Post.find({})
@@ -34,7 +38,11 @@ export const getAllPostCtrl = async (req: Request, res: Response, next: NextFunc
 /**
  * Toggle likes
  */
-export const toggleLikesCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const toggleLikesCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
@@ -62,7 +70,11 @@ export const toggleLikesCtrl = async (req: Request, res: Response, next: NextFun
 /**
  * Toggle disDikes
  */
-export const toggleDisLikesCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const toggleDisLikesCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
@@ -88,7 +100,11 @@ export const toggleDisLikesCtrl = async (req: Request, res: Response, next: Next
 /**
  * Get post details
  */
-export const getPostByIdCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const getPostByIdCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
@@ -113,7 +129,11 @@ export const getPostByIdCtrl = async (req: Request, res: Response, next: NextFun
 /**
  * Create post
  */
-export const createPostCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const createPostCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const {
     title,
     excerpt,
@@ -132,6 +152,11 @@ export const createPostCtrl = async (req: Request, res: Response, next: NextFunc
 
     if (!author) return next(appError('Author not found.', 401));
     if (author.isBlocked) return next(appError('Access denied, account blocked', 403));
+
+    /**todo check category is exists
+     * if (!category) return next(appError('The category is invalid', 400));
+     * const isCategory = Category.findById(category)
+     */
 
     // 2. Create the post
     const postCreated = await Post.create({
