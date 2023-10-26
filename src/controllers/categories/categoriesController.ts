@@ -7,7 +7,11 @@ import { User } from '../../models/user/User';
 /**
  * Fetch categories
  */
-export const fetchCategoriesCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const fetchCategoriesCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const categories = await Category.find({});
     return res.json({
@@ -23,7 +27,11 @@ export const fetchCategoriesCtrl = async (req: Request, res: Response, next: Nex
 /**
  * Get single category
  */
-export const categoryDetailCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const categoryDetailCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const category = await Category.findById(req.params.id);
     if (!category) {
@@ -43,7 +51,11 @@ export const categoryDetailCtrl = async (req: Request, res: Response, next: Next
 /**
  * Create category
  */
-export const categoryCreateCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const categoryCreateCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { title } = req.body;
 
   try {
@@ -70,7 +82,11 @@ export const categoryCreateCtrl = async (req: Request, res: Response, next: Next
 /**
  * Update category
  */
-export const categoryUpdateCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const categoryUpdateCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { title } = req.body;
   try {
     const user = await User.findById(req.body.userAuth.id);
@@ -108,7 +124,11 @@ export const categoryUpdateCtrl = async (req: Request, res: Response, next: Next
 /**
  * Delete category
  */
-export const categoryDeleteCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const categoryDeleteCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user) {

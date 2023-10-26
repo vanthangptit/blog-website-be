@@ -1,11 +1,4 @@
-import {
-  model,
-  Schema,
-  Model,
-  Types,
-  Document,
-  HydratedDocument
-} from 'mongoose';
+import { model, Schema, Types, Document } from 'mongoose';
 
 export interface ICategory extends Document {
   title: string

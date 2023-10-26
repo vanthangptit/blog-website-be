@@ -7,6 +7,7 @@ import {
   categoryDetailCtrl,
 } from '../../controllers/categories/categoriesController';
 import { isAuthenticated } from '../../middlewares';
+import { categoryValidation } from '../../domain/validations/categoryValidation';
 
 const categoryRouter = express.Router();
 
@@ -23,16 +24,30 @@ categoryRouter.get('/:id', categoryDetailCtrl);
 /**
  * @method POST::Create category
  */
-categoryRouter.post('/', isAuthenticated, categoryCreateCtrl);
+categoryRouter.post(
+  '/',
+  categoryValidation,
+  isAuthenticated,
+  categoryCreateCtrl
+);
 
 /**
  * @method PUT::Update category
  */
-categoryRouter.put('/:id', isAuthenticated, categoryUpdateCtrl);
+categoryRouter.put(
+  '/:id',
+  categoryValidation,
+  isAuthenticated,
+  categoryUpdateCtrl
+);
 
 /**
  * @method DELETE::Delete category
  */
-categoryRouter.delete('/:id', isAuthenticated, categoryDeleteCtrl);
+categoryRouter.delete(
+  '/:id',
+  isAuthenticated,
+  categoryDeleteCtrl
+);
 
 export default categoryRouter;
