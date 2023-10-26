@@ -6,9 +6,10 @@ import userRouter from './routes/users/userRoutes';
 import postRouter from './routes/posts/postRoutes';
 import categoryRouter from './routes/categories/categoryRoutes';
 import commentRouter from './routes/comments/commentRoutes';
-import { globalErrHandler } from './middlewares';
 
+import { globalErrHandler } from './middlewares';
 import { connectDB } from './database/database';
+
 import conf from './services/conf';
 
 const app: Application = express();
