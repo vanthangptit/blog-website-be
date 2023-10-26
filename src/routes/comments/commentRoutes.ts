@@ -5,6 +5,7 @@ import {
   commentDeleteCtrl,
   commentUpdateCtrl
 } from '../../controllers/comments/commentController';
+import { commentValidation } from '../../domain/validations/commentValidation';
 
 const commentRouter = express.Router();
 
@@ -13,6 +14,7 @@ const commentRouter = express.Router();
  */
 commentRouter.post(
   '/:id',
+  commentValidation,
   isAuthenticated,
   commentCreateCtrl
 );
@@ -22,6 +24,7 @@ commentRouter.post(
  */
 commentRouter.put(
   '/:id',
+  commentValidation,
   isAuthenticated,
   commentUpdateCtrl
 );

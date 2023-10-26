@@ -1,16 +1,14 @@
 import {
   model,
   Schema,
-  Model,
   Types,
   Document,
-  HydratedDocument
 } from 'mongoose';
 
 export interface IComment extends Document {
   description: string
   post: Types.ObjectId
-  user: any
+  user: Types.ObjectId
 }
 
 const CommentSchema = new Schema<IComment>({
@@ -20,8 +18,8 @@ const CommentSchema = new Schema<IComment>({
     required: [true, 'Post is required'],
   },
   user: {
-    type: Object,
-    required: [true, 'Please is required'],
+    type: Schema.Types.ObjectId,
+    required: [true, 'User is required'],
   },
   description: {
     type: String,

@@ -8,7 +8,11 @@ import { Comment } from '../../models/comment/Comment';
 /**
  * Create comment
  */
-export const commentCreateCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const commentCreateCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { description } = req.body;
   try {
     const post = await Post.findById(req.params.id);
@@ -41,7 +45,11 @@ export const commentCreateCtrl = async (req: Request, res: Response, next: NextF
 /**
  * Update comment
  */
-export const commentUpdateCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const commentUpdateCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { description } = req.body;
   try {
     const user = await User.findById(req.body.userAuth.id);
@@ -53,7 +61,9 @@ export const commentUpdateCtrl = async (req: Request, res: Response, next: NextF
       return next(appError('Comment not exists', 404));
 
     if (comment.user.toString() !== req.body.userAuth.id.toString())
-      return next(appError('You are not allowed to update this comment.', 403));
+      return next(
+        appError('You are not allowed to update this comment.', 403)
+      );
 
     const commentNew = await Comment.findByIdAndUpdate(
       req.params.id,
@@ -79,7 +89,11 @@ export const commentUpdateCtrl = async (req: Request, res: Response, next: NextF
 /**
  * Delete comment
  */
-export const commentDeleteCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const commentDeleteCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user)
@@ -90,7 +104,9 @@ export const commentDeleteCtrl = async (req: Request, res: Response, next: NextF
       return next(appError('The comment was not found.', 401));
 
     if (user._id.toString() !== comment.user.toString())
-      return next(appError('Access denied. You can not delete this comment.', 403));
+      return next(
+        appError('Access denied. You can not delete this comment.', 403)
+      );
 
     await Comment.findByIdAndDelete(req.params.id);
 

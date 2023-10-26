@@ -25,7 +25,7 @@ import {
   loginValidation,
   registerValidation,
   updateUserValidation
-} from '../../domain/validations/UserValidation';
+} from '../../domain/validations/userValidation';
 
 const userRouter = express.Router();
 

@@ -9,7 +9,7 @@ import {
   toggleDisLikesCtrl,
 } from '../../controllers/posts/postController';
 import { isAuthenticated } from '../../middlewares';
-import { createPostValidation } from '../../domain/validations/PostValidation';
+import { createPostValidation } from '../../domain/validations/postValidation';
 
 const postRouter = express.Router();
 
