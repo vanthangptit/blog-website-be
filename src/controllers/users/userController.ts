@@ -13,7 +13,11 @@ import { Comment } from '../../models/comment/Comment';
 /**
  * Register user
  */
-export const userRegisterCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const userRegisterCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { firstName, lastName, profilePhoto, email, password } = req.body;
   try {
     const userFound = await User.findOne({ email });
@@ -42,7 +46,11 @@ export const userRegisterCtrl = async (req: Request, res: Response, next: NextFu
 /**
  * Login user
  */
-export const userLoginCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const userLoginCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { email, password } = req.body;
 
   try {
@@ -75,7 +83,11 @@ export const userLoginCtrl = async (req: Request, res: Response, next: NextFunct
 /**
  * Get users
  */
-export const userGetAllCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const userGetAllCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const users = await User.find({});
     return res.json({
@@ -91,7 +103,11 @@ export const userGetAllCtrl = async (req: Request, res: Response, next: NextFunc
 /**
  * Get profile
  */
-export const userProfileCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const userProfileCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id).populate({
@@ -112,7 +128,11 @@ export const userProfileCtrl = async (req: Request, res: Response, next: NextFun
 /**
  * Who view my profile
  */
-export const whoViewMyProfileCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const whoViewMyProfileCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the original
     const user = await User.findById(req.params.id);
@@ -147,7 +167,11 @@ export const whoViewMyProfileCtrl = async (req: Request, res: Response, next: Ne
 /**
  * Following
  */
-export const followingCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const followingCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to follow
     const userToFollow = await User.findById(req.params.id);
@@ -185,7 +209,11 @@ export const followingCtrl = async (req: Request, res: Response, next: NextFunct
 /**
  * unFollow
  */
-export const unfollowCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const unfollowCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to unfollow
     const userToBeUnfollowed = await User.findById(req.params.id);
@@ -221,7 +249,11 @@ export const unfollowCtrl = async (req: Request, res: Response, next: NextFuncti
 /**
  * Block user
  */
-export const blockUserCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const blockUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to be blocked
     const userToBeBlocked = await User.findById(req.params.id);
@@ -256,7 +288,11 @@ export const blockUserCtrl = async (req: Request, res: Response, next: NextFunct
 /**
  * Unblock user
  */
-export const unblockUserCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const unblockUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to be blocked
     const userToBeUnBlocked = await User.findById(req.params.id);
@@ -291,7 +327,11 @@ export const unblockUserCtrl = async (req: Request, res: Response, next: NextFun
 /**
  * Admin block
  */
-export const adminBlockUserCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const adminBlockUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to be blocked
     const userToBeUnBlocked = await User.findById(req.params.id);
@@ -315,7 +355,11 @@ export const adminBlockUserCtrl = async (req: Request, res: Response, next: Next
 /**
  * Admin unblock
  */
-export const adminUnblockUserCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const adminUnblockUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // 1. Find the user to be blocked
     const userToBeUnBlocked = await User.findById(req.params.id);
@@ -339,8 +383,12 @@ export const adminUnblockUserCtrl = async (req: Request, res: Response, next: Ne
 /**
  * Update user
  */
-export const userUpdateCtrl = async (req: Request, res: Response, next: NextFunction) => {
-  const { firstName, lastName, email, profilePhoto, gender, birthDay } = req.body;
+export const userUpdateCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { firstName, lastName, profilePhoto, gender, birthDay } = req.body;
   try {
     const user = await User.findById(req.body.userAuth.id);
 
@@ -352,7 +400,6 @@ export const userUpdateCtrl = async (req: Request, res: Response, next: NextFunc
       {
         firstName,
         lastName,
-        email,
         profilePhoto,
         gender,
         birthDay,
@@ -376,7 +423,11 @@ export const userUpdateCtrl = async (req: Request, res: Response, next: NextFunc
 /**
  * Update password user
  */
-export const updatePasswordUserCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const updatePasswordUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { password, passwordConfirm } = req.body;
 
   if (!password || !passwordConfirm)
@@ -413,7 +464,11 @@ export const updatePasswordUserCtrl = async (req: Request, res: Response, next: 
 /**
  * Delete user
  */
-export const userDeleteCtrl = async (req: Request, res: Response, next: NextFunction) => {
+export const userDeleteCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userToDelete = await User.findById(req.body.userAuth.id);
     if (!userToDelete)

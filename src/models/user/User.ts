@@ -12,7 +12,7 @@ export interface IUser extends Document {
   role: string
   profilePhoto?: string
   gender?: string
-  birthDay?: Date
+  birthDay?: string
   viewers: Types.ObjectId[]
   followers: Types.ObjectId[]
   following: Types.ObjectId[]
@@ -65,10 +65,11 @@ const UserSchema = new Schema<IUser>({
   },
   gender: {
     type: String,
-    required: false,
+    enum: ['female', 'male', 'other'],
+    default: 'other',
   },
   birthDay: {
-    type: Date,
+    type: String,
     required: false,
   },
   viewers: [

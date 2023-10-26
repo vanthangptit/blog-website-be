@@ -20,18 +20,33 @@ import {
   isAuthenticated,
   isAuthenticatedWithAdmin
 } from '../../middlewares';
+import {
+  changePasswordValidation,
+  loginValidation,
+  registerValidation,
+  updateUserValidation
+} from '../../domain/validations/UserValidation';
 
 const userRouter = express.Router();
 
 /**
  * @method POST::Register user
  */
-userRouter.post('/register', userRegisterCtrl);
+userRouter.post(
+  '/register',
+  registerValidation,
+  userRegisterCtrl,
+);
 
 /**
  * @method POST::Login user
  */
-userRouter.post('/login', rateLimitMiddleware, userLoginCtrl);
+userRouter.post(
+  '/login',
+  loginValidation,
+  rateLimitMiddleware,
+  userLoginCtrl
+);
 
 /**
  * @method Get::Get all user
@@ -117,6 +132,7 @@ userRouter.get(
  */
 userRouter.put(
   '/',
+  updateUserValidation,
   isAuthenticated,
   userUpdateCtrl
 );
@@ -126,6 +142,7 @@ userRouter.put(
  */
 userRouter.put(
   'update-password',
+  changePasswordValidation,
   isAuthenticated,
   updatePasswordUserCtrl
 );
