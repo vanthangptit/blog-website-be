@@ -1,28 +1,6 @@
-import { model, Schema, Types, Document } from 'mongoose';
-import { IPost, Post } from '../post/Post';
-
-export interface IUser extends Document {
-  firstName: string
-  lastName: string
-  email: string
-  password?: string
-  isLoginGoogle?: boolean
-  isBlocked?: boolean
-  isAdmin: boolean
-  role: string
-  profilePhoto?: string
-  gender?: string
-  birthDay?: string
-  viewers: Types.ObjectId[]
-  followers: Types.ObjectId[]
-  following: Types.ObjectId[]
-  posts: IPost[]
-  comments: Types.ObjectId[]
-  blocked: Types.ObjectId[]
-  plan: string
-  userAward: string
-  fullName?: string
-}
+import { model, Schema } from 'mongoose';
+import { Post } from '..';
+import { IUser } from '../../domain/interfaces';
 
 const UserSchema = new Schema<IUser>({
   firstName: {
@@ -54,10 +32,9 @@ const UserSchema = new Schema<IUser>({
     type: Boolean,
     default: false,
   },
-  role: {
-    type: String,
-    enum: ['admin', 'creator', 'editor', 'normal'],
-    default: 'normal',
+  emailVerified: {
+    type: Boolean,
+    default: false,
   },
   profilePhoto: {
     type: String,
@@ -131,62 +108,61 @@ const UserSchema = new Schema<IUser>({
  * passed control during execution of asynchronous functions.
  * Middleware is specified on the schema level and is useful for writing plugins.
 */
-UserSchema.pre('findOne', async function(next) {
-  // eslint-disable-next-line no-console
-  console.log('this', this);
+UserSchema.pre('findOne',async function(next) {
+  const queryObject = this.getQuery();
+  let userId = queryObject._id;
 
-  // const userId = this._conditions?._id;
-  // const lastPost = await Post.findOne({ user: userId })
-  //   .sort({ createdAt: -1 })
-  //   .limit(1);
-  // if (lastPost) {
-  //   const lastPostDate = new Date(lastPost?.createdAt);
-  //   UserSchema.virtual('lastPostDate').get(function() {
-  //     return `${lastPostDate}`;
-  //   });
-  //
-  //   //---------If check the user is inactive for 30days-----------------
-  //   const currentDate = new Date();
-  //   const diff = currentDate - lastPostDate;
-  //   const diffInDays = diff / (1000 * 3600 * 24);
-  //   UserSchema.virtual('isInactive').get(function() {
-  //     return diffInDays > 30;
-  //   });
-  //   await User.findByIdAndUpdate(
-  //     userId,
-  //     {
-  //       isBlocked: diffInDays > 30,
-  //     },
-  //     {
-  //       new: true,
-  //     }
-  //   );
-  //
-  //   //--------- Last active date -----------------
-  //   const daysAgo = Math.floor(diffInDays);
-  //   UserSchema.virtual('lastActive').get(function() {
-  //     if (daysAgo <= 0) {
-  //       return 'Today';
-  //     } else if (daysAgo === 1) {
-  //       return 'Yesterday';
-  //     } else {
-  //       return `${daysAgo} days ago`;
-  //     }
-  //   });
-  // }
-  //
-  // //--------- Update userAward based on the number of posts -----------------
-  // const numberOfPosts = await Post.count({ user: userId });
-  // let userAward = 'bronze';
-  // if (numberOfPosts > 10 && numberOfPosts <= 20) {
-  //   userAward = 'silver';
-  // } else if (numberOfPosts > 20) {
-  //   userAward = 'gold';
-  // }
-  //
-  // await User.findByIdAndUpdate(userId, { userAward }, { new: true });
-  //
-  // next();
+  if (!userId) return next();
+
+  const lastPost = await Post.findOne({ user: userId });
+  if (lastPost) {
+    const lastPostDate: any = new Date(lastPost?.createdAt);
+    UserSchema.virtual('lastPostDate').get(function() {
+      return `${lastPostDate}`;
+    });
+
+    //---------If check the user is inactive for 30days-----------------
+    const currentDate: any = new Date();
+    const diff = currentDate - lastPostDate;
+    const diffInDays = diff / (1000 * 3600 * 24);
+    UserSchema.virtual('isInactive').get(function() {
+      return diffInDays > 30;
+    });
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        isBlocked: diffInDays > 30,
+      },
+      {
+        new: true,
+      }
+    );
+
+    //--------- Last active date -----------------
+    const daysAgo = Math.floor(diffInDays);
+    UserSchema.virtual('lastActive').get(function() {
+      if (daysAgo <= 0) {
+        return 'Today';
+      } else if (daysAgo === 1) {
+        return 'Yesterday';
+      } else {
+        return `${daysAgo} days ago`;
+      }
+    });
+  }
+
+  //--------- Update userAward based on the number of posts -----------------
+  const numberOfPosts = await Post.count({ user: userId });
+  let userAward = 'bronze';
+  if (numberOfPosts > 10 && numberOfPosts <= 20) {
+    userAward = 'silver';
+  } else if (numberOfPosts > 20) {
+    userAward = 'gold';
+  }
+
+  await User.findByIdAndUpdate(userId, { userAward }, { new: true });
+
+  next();
 });
 
 /**
