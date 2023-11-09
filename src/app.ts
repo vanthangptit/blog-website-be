@@ -33,6 +33,16 @@ const init = async () => {
     }
   }));
 
+  /** @todo
+   * Use csrf middleware to routing
+   * Reference: https://www.geeksforgeeks.org/implementing-csurf-middleware-in-node-js/
+   **/
+
+  /** @todo
+   * Use caching data (suggestion: Redis)
+   * Reference: https://blog.logrocket.com/caching-node-js-optimize-app-performance/
+   **/
+
   // Routes
   app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to my website')

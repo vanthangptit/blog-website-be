@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated } from '../../middlewares';
+import { isAuthenticated, isValidationResult } from '../../middlewares';
 import {
   commentCreateCtrl,
   commentDeleteCtrl,
@@ -14,7 +14,8 @@ const commentRouter = express.Router();
  */
 commentRouter.post(
   '/:id',
-  commentValidation,
+  commentValidation(),
+  isValidationResult,
   isAuthenticated,
   commentCreateCtrl
 );
@@ -24,7 +25,8 @@ commentRouter.post(
  */
 commentRouter.put(
   '/:id',
-  commentValidation,
+  commentValidation(),
+  isValidationResult,
   isAuthenticated,
   commentUpdateCtrl
 );

@@ -6,7 +6,7 @@ import {
   categoryUpdateCtrl,
   categoryDetailCtrl,
 } from '../../controllers/categories/categoriesController';
-import { isAuthenticated } from '../../middlewares';
+import { isAuthenticated, isValidationResult } from '../../middlewares';
 import { categoryValidation } from '../../domain/validations/categoryValidation';
 
 const categoryRouter = express.Router();
@@ -26,7 +26,8 @@ categoryRouter.get('/:id', categoryDetailCtrl);
  */
 categoryRouter.post(
   '/',
-  categoryValidation,
+  categoryValidation(),
+  isValidationResult,
   isAuthenticated,
   categoryCreateCtrl
 );
@@ -36,7 +37,8 @@ categoryRouter.post(
  */
 categoryRouter.put(
   '/:id',
-  categoryValidation,
+  categoryValidation(),
+  isValidationResult,
   isAuthenticated,
   categoryUpdateCtrl
 );

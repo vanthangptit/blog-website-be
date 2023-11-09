@@ -1,14 +1,25 @@
 import { NextFunction, Request, Response } from 'express';
+import { nanoid } from 'nanoid';
+import moment from 'moment';
+
 import {
   passwordHash,
   comparePassword,
   generateToken,
   appError
 } from '../../services/helpers';
-import { User } from '../../models/user/User';
-import { Post } from '../../models/post/Post';
-import { Category } from '../../models/category/Category';
-import { Comment } from '../../models/comment/Comment';
+import {
+  User,
+  Post,
+  Category,
+  Comment,
+  PasswordReset,
+  EmailChange,
+  EmailVerification
+} from '../../models';
+import { sendVerifyEmailMail } from '../../services/mail-sender';
+import conf from './../../services/conf';
+import { startSession } from 'mongoose';
 
 /**
  * Register user
@@ -18,20 +29,40 @@ export const userRegisterCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { firstName, lastName, profilePhoto, email, password } = req.body;
+  const { firstName, lastName, profilePhoto, email, password, passwordConfirm } = req.body;
+  const session = await startSession();
+  session.startTransaction();
+
   try {
     const userFound = await User.findOne({ email });
-    if (userFound) {
+    if (userFound)
       return next(appError('Email already exists', 404));
-    }
 
-    const user = await User.create({
+    if (passwordConfirm !== password)
+      return next(appError('Password not match', 400));
+
+    const user = await User.create([{
       firstName,
       lastName,
       profilePhoto,
       email,
       password: await passwordHash(password)
-    });
+    }], { session  });
+
+    const token = nanoid();
+    await EmailVerification.create([{
+      token,
+      user: user[0]?._id,
+      validUntil: moment(new Date()).add(1, 'day')
+    }], { session });
+
+    /** @todo google cloud (Oauth2 - blog-website)
+     * https://console.cloud.google.com/apis/credentials?project=blog-website-404616&supportedpurview=project
+     **/
+    // await sendVerifyEmailMail(email, `${firstName + ' ' + lastName}`, token);
+
+    await session.commitTransaction();
+    await session.endSession();
 
     return res.json({
       status: 200,
@@ -39,6 +70,8 @@ export const userRegisterCtrl = async (
       data: user,
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };
@@ -55,14 +88,12 @@ export const userLoginCtrl = async (
 
   try {
     const userFound = await User.findOne({ email });
-    if (!password || !userFound) {
+    if (!password || !password?.length|| !userFound)
       return next(appError('Invalid login credentials', 401));
-    }
 
     const isPasswordMatched = await comparePassword(password, userFound?.password ?? '');
-    if (!isPasswordMatched) {
+    if (!isPasswordMatched)
       return next(appError('Invalid login credentials', 401));
-    }
 
     return res.json({
       status: 200,
@@ -113,9 +144,9 @@ export const userProfileCtrl = async (
     const user = await User.findById(id).populate({
       path: 'posts',
     });
-    if (!user) {
+    if (!user)
       return res.json({ status: 404, message: 'User not found' });
-    }
+
     return res.status(200).json({
       message: 'Get profile successfully',
       data: user,
@@ -484,6 +515,41 @@ export const userDeleteCtrl = async (
       status: 200,
       message: 'User deleted successfully',
     });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Verify email
+ */
+export const verifyEmailController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { token } = req.query;
+
+  try {
+    const emailVerification = await EmailVerification
+      .findOne({ token })
+      .populate({
+        path: 'user',
+      });
+
+    if (!emailVerification)
+      return next(appError(`Verify email called with invalid email token ${token}`, 400));
+
+    const dateIsAfter  = moment(emailVerification.validUntil).isAfter(moment(new Date()));
+    if (emailVerification && dateIsAfter) {
+      await User.findByIdAndUpdate(emailVerification.user._id, {
+        emailVerified: true,
+      });
+
+      res.redirect(conf.email.urlLogin)
+    } else {
+      return next(appError(`Verify email called with invalid email token ${token}`, 400));
+    }
   } catch (e: any) {
     return next(appError(e.message));
   }

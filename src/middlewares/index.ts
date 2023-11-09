@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit } from 'express-rate-limit';
+import { validationResult } from 'express-validator';
 
-import { User } from '../models/user/User';
+import { User } from '../models';
 import {
   appError,
   getTokenFromHeader,
@@ -102,3 +103,23 @@ export const rateLimitMiddleware = rateLimit({
   message: 'You have exceeded your 5 requests per minute limit.',
   headers: true,
 });
+
+/**
+ * @middleware isValidationResult
+ *
+ * This middleware function helps check if the request is valid based on the headers.
+ */
+export async function isValidationResult(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const errors: any = validationResult(req);
+  if (!errors.isEmpty()) {
+    // eslint-disable-next-line no-console
+    console.log(errors);
+    return res.status(400).send(errors?.errors[0]?.msg);
+  }
+
+  next();
+}

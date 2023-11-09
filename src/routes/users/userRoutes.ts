@@ -14,11 +14,13 @@ import {
   adminBlockUserCtrl,
   adminUnblockUserCtrl,
   updatePasswordUserCtrl,
+  verifyEmailController,
 } from '../../controllers/users/userController';
 import {
   rateLimitMiddleware,
   isAuthenticated,
-  isAuthenticatedWithAdmin
+  isAuthenticatedWithAdmin,
+  isValidationResult
 } from '../../middlewares';
 import {
   changePasswordValidation,
@@ -34,7 +36,8 @@ const userRouter = express.Router();
  */
 userRouter.post(
   '/register',
-  registerValidation,
+  registerValidation(),
+  isValidationResult,
   userRegisterCtrl,
 );
 
@@ -43,7 +46,8 @@ userRouter.post(
  */
 userRouter.post(
   '/login',
-  loginValidation,
+  loginValidation(),
+  isValidationResult,
   rateLimitMiddleware,
   userLoginCtrl
 );
@@ -132,7 +136,8 @@ userRouter.get(
  */
 userRouter.put(
   '/',
-  updateUserValidation,
+  updateUserValidation(),
+  isValidationResult,
   isAuthenticated,
   userUpdateCtrl
 );
@@ -142,7 +147,8 @@ userRouter.put(
  */
 userRouter.put(
   'update-password',
-  changePasswordValidation,
+  changePasswordValidation(),
+  isValidationResult,
   isAuthenticated,
   updatePasswordUserCtrl
 );
@@ -154,6 +160,14 @@ userRouter.delete(
   '/',
   isAuthenticated,
   userDeleteCtrl
+);
+
+/**
+ * @method GET::Verify token email
+ */
+userRouter.get(
+  '/verify',
+  verifyEmailController
 );
 
 export default userRouter;

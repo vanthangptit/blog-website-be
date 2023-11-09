@@ -8,7 +8,7 @@ import {
   toggleLikesCtrl,
   toggleDisLikesCtrl,
 } from '../../controllers/posts/postController';
-import { isAuthenticated } from '../../middlewares';
+import {isAuthenticated, isValidationResult} from '../../middlewares';
 import { createPostValidation } from '../../domain/validations/postValidation';
 
 const postRouter = express.Router();
@@ -50,7 +50,8 @@ postRouter.get(
  */
 postRouter.post(
   '/',
-  createPostValidation,
+  createPostValidation(),
+  isValidationResult,
   isAuthenticated,
   createPostCtrl
 );
@@ -60,7 +61,8 @@ postRouter.post(
  */
 postRouter.put(
   '/:id',
-  createPostValidation,
+  createPostValidation(),
+  isValidationResult,
   isAuthenticated,
   updatePostCtrl
 );
