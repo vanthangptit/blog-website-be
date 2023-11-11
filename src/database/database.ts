@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import conf from '../services/conf';
+import conf from '../config';
 
 const { dbName, dbUsername, dbPassword } = conf;
 

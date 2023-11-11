@@ -2,15 +2,15 @@ import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 
-import userRouter from './routes/users/userRoutes';
-import postRouter from './routes/posts/postRoutes';
-import categoryRouter from './routes/categories/categoryRoutes';
-import commentRouter from './routes/comments/commentRoutes';
+import userRouter from './modules/v1/users/routes/userRoutes';
+import postRouter from './modules/v1/posts/routes/postRoutes';
+import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
+import commentRouter from './modules/v1/comments/routes/commentRoutes';
 
 import { globalErrHandler } from './middlewares';
 import { connectDB } from './database/database';
 
-import conf from './services/conf';
+import conf from './config';
 
 const app: Application = express();
 const { port, accessDomain } = conf;

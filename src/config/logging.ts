@@ -1,0 +1,3 @@
+/**
+ * Configure for logging
+ */

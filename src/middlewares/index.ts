@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { validationResult } from 'express-validator';
 
-import { User } from '../models';
+import { User } from '../modules/v1/users/models/User';
 import {
   appError,
   getTokenFromHeader,
   verifyToken
-} from '../services/helpers';
+} from '../config/helpers';
 
 /**
  * Validation login user
