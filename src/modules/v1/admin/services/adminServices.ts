@@ -5,24 +5,29 @@ import {
   userGetAllCtrl,
   userProfileCtrl,
   userUpdateCtrl,
+  userDeleteCtrl,
   whoViewMyProfileCtrl,
   followingCtrl,
   unfollowCtrl,
   blockUserCtrl,
   unblockUserCtrl,
+  adminBlockUserCtrl,
+  adminUnblockUserCtrl,
   updatePasswordUserCtrl,
-} from '../controllers/userController';
+  verifyEmailController,
+} from '../controllers/adminController';
 import {
   rateLimitMiddleware,
   isAuthenticated,
+  isAuthenticatedWithAdmin,
   isValidationResult
-} from '../../../../middlewares';
+} from '../../middlewares';
 import {
   changePasswordValidation,
   loginValidation,
   registerValidation,
   updateUserValidation
-} from './validations/userValidation';
+} from '../../domain/validations/userValidation';
 
 const userRouter = express.Router();
 
@@ -98,6 +103,26 @@ userRouter.get(
 );
 
 /**
+ * @method PUT::Admin block user
+ */
+userRouter.put(
+  '/admin-block/:id',
+  isAuthenticated,
+  isAuthenticatedWithAdmin,
+  adminBlockUserCtrl,
+);
+
+/**
+ * @method PUT::Admin unblock user
+ */
+userRouter.put(
+  '/admin-unblock/:id',
+  isAuthenticated,
+  isAuthenticatedWithAdmin,
+  adminUnblockUserCtrl,
+);
+
+/**
  * @method Get::Get profile user
  */
 userRouter.get(
@@ -126,6 +151,23 @@ userRouter.put(
   isValidationResult,
   isAuthenticated,
   updatePasswordUserCtrl
+);
+
+/**
+ * @method DELETE::Deleted user
+ */
+userRouter.delete(
+  '/',
+  isAuthenticated,
+  userDeleteCtrl
+);
+
+/**
+ * @method GET::Verify token email
+ */
+userRouter.get(
+  '/verify',
+  verifyEmailController
 );
 
 export default userRouter;
