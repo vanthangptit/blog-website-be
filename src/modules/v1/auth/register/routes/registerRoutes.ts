@@ -2,7 +2,7 @@ import express from 'express';
 
 import {
   isValidationResult,
-} from '../../../../middlewares';
+} from '../../../../../middlewares';
 import { registerValidation } from './validations/registerValidation';
 import { registerCtrl } from '../controllers/registerController';
 

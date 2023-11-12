@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { appError, passwordHash } from '../../../../utils';
-import { User } from '../../users/models/User';
+import { appError, passwordHash } from '../../../../../utils';
+import { User } from '../../../users/models/User';
 import { startSession } from 'mongoose';
 import { nanoid } from 'nanoid';
-import { EmailVerification } from '../../emails/models/EmailVerification';
+import { EmailVerification } from '../../../emails/models/EmailVerification';
 import moment from 'moment';
 
 export const registerCtrl = async (

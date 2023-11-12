@@ -3,7 +3,7 @@ import { loginCtrl } from '../controllers/loginController';
 import {
   rateLimitMiddleware,
   isValidationResult
-} from '../../../../middlewares';
+} from '../../../../../middlewares';
 import { loginValidation } from './validations/loginValidation';
 
 const loginRouter = express.Router();

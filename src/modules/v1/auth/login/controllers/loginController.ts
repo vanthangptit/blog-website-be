@@ -4,8 +4,8 @@ import {
   comparePassword,
   generateToken,
   appError
-} from '../../../../utils';
-import { User } from '../../users/models/User';
+} from '../../../../../utils';
+import { User } from '../../../users/models/User';
 
 export const loginCtrl = async (
   req: Request,
