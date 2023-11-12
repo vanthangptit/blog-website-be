@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { validationResult } from 'express-validator';
+import { nanoid } from 'nanoid';
 
 import { User } from '../modules/v1/users/models/User';
 import {
@@ -123,3 +124,26 @@ export async function isValidationResult(
 
   next();
 }
+
+// /**
+//  * @middleware Generate CSRF token
+//  */
+// function generateCSRFToken(req, res, next) {
+//   const csrfToken = nanoid(16);
+//   console.log(csrfToken)
+//   res.cookie('mycsrfToken', csrfToken);
+//   req.csrfToken = csrfToken;
+//   next();
+// }
+//
+// /**
+//  * @middleware Validate CSRF token middleware
+//  */
+// function validateCSRFToken(req, res, next) {
+//   const csrfToken = req.cookies.mycsrfToken;
+//   if (req.body.csrfToken === csrfToken) {
+//     next();
+//   } else {
+//     res.status(403).send('Invalid CSRF token');
+//   }
+// }

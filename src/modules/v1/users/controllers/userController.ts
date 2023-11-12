@@ -5,16 +5,11 @@ import { startSession } from 'mongoose';
 
 import {
   passwordHash,
-  comparePassword,
-  generateToken,
   appError
 } from '../../../../utils';
 import { User } from '../models/User';
-import { Category } from '../../categories/models/Category';
 import { EmailVerification } from '../../emails/models/EmailVerification';
-import { Post } from '../../posts/models/Post';
-import { Comment} from '../../comments/models/Comment';
-import {IUser} from "../../../../domain/interfaces";
+import { IUser } from '../../../../domain/interfaces';
 
 /**
  * Register user
@@ -67,42 +62,6 @@ export const userRegisterCtrl = async (
   } catch (e: any) {
     await session.abortTransaction();
     await session.endSession();
-    return next(appError(e.message));
-  }
-};
-
-/**
- * Login user
- */
-export const userLoginCtrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email, password } = req.body;
-
-  try {
-    const userFound = await User.findOne({ email });
-    if (!password || !password?.length|| !userFound)
-      return next(appError('Invalid login credentials', 401));
-
-    const isPasswordMatched = await comparePassword(password, userFound?.password ?? '');
-    if (!isPasswordMatched)
-      return next(appError('Invalid login credentials', 401));
-
-    return res.json({
-      status: 200,
-      message: 'User logged in successful',
-      data: {
-        firstName: userFound.firstName,
-        lastName: userFound.lastName,
-        profilePhoto: userFound.profilePhoto,
-        isAdmin: userFound.isAdmin,
-        isBlocked: userFound.isBlocked,
-        accessToken: generateToken(userFound._id)
-      },
-    });
-  } catch (e: any) {
     return next(appError(e.message));
   }
 };

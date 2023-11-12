@@ -1,12 +1,14 @@
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import csrf from 'csurf';
 
 import userRouter from './modules/v1/users/routes/userRoutes';
 import postRouter from './modules/v1/posts/routes/postRoutes';
 import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
 import commentRouter from './modules/v1/comments/routes/commentRoutes';
 import adminRouter from './modules/v1/admin/routes/adminRoutes';
+import loginRouter from './modules/v1/login/routes/loginRoutes';
 
 import { globalErrHandler } from './middlewares';
 import { connectDB } from './database/database';
@@ -53,6 +55,7 @@ const init = async () => {
   app.use('/api/v1/categories', categoryRouter);
   app.use('/api/v1/comments', commentRouter);
   app.use('/api/v1/admin', adminRouter);
+  app.use('/api/v1/login', loginRouter);
 
   // Error handlers middleware
   app.use(globalErrHandler);

@@ -1,7 +1,6 @@
 import express from 'express';
 import {
   userRegisterCtrl,
-  userLoginCtrl,
   userGetAllCtrl,
   userProfileCtrl,
   userUpdateCtrl,
@@ -13,13 +12,11 @@ import {
   updatePasswordUserCtrl,
 } from '../controllers/userController';
 import {
-  rateLimitMiddleware,
   isAuthenticated,
   isValidationResult
 } from '../../../../middlewares';
 import {
   changePasswordValidation,
-  loginValidation,
   registerValidation,
   updateUserValidation
 } from './validations/userValidation';
@@ -34,17 +31,6 @@ userRouter.post(
   registerValidation(),
   isValidationResult,
   userRegisterCtrl,
-);
-
-/**
- * @method POST::Login user
- */
-userRouter.post(
-  '/login',
-  loginValidation(),
-  isValidationResult,
-  rateLimitMiddleware,
-  userLoginCtrl
 );
 
 /**
