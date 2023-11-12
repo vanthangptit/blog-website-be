@@ -9,12 +9,12 @@ import {
   isAuthenticatedWithAdmin,
 } from '../../../../middlewares';
 
-const userRouter = express.Router();
+const adminRouter = express.Router();
 
 /**
  * @method PUT::Admin block user
  */
-userRouter.put(
+adminRouter.put(
   '/admin-block/:id',
   isAuthenticated,
   isAuthenticatedWithAdmin,
@@ -24,7 +24,7 @@ userRouter.put(
 /**
  * @method PUT::Admin unblock user
  */
-userRouter.put(
+adminRouter.put(
   '/admin-unblock/:id',
   isAuthenticated,
   isAuthenticatedWithAdmin,
@@ -34,10 +34,10 @@ userRouter.put(
 /**
  * @method DELETE::Deleted user
  */
-userRouter.delete(
+adminRouter.delete(
   '/',
   isAuthenticatedWithAdmin,
   userDeleteCtrl
 );
 
-export default userRouter;
+export default adminRouter;
