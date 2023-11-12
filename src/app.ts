@@ -9,6 +9,7 @@ import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
 import commentRouter from './modules/v1/comments/routes/commentRoutes';
 import adminRouter from './modules/v1/admin/routes/adminRoutes';
 import loginRouter from './modules/v1/login/routes/loginRoutes';
+import registerRouter from './modules/v1/register/routes/registerRoutes';
 
 import { globalErrHandler } from './middlewares';
 import { connectDB } from './database/database';
@@ -55,7 +56,8 @@ const init = async () => {
   app.use('/api/v1/categories', categoryRouter);
   app.use('/api/v1/comments', commentRouter);
   app.use('/api/v1/admin', adminRouter);
-  app.use('/api/v1/login', loginRouter);
+  app.use('/api/v1/auth/login', loginRouter);
+  app.use('/api/v1/auth/register', registerRouter);
 
   // Error handlers middleware
   app.use(globalErrHandler);

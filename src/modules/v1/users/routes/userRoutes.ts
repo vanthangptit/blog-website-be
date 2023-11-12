@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  userRegisterCtrl,
   userGetAllCtrl,
   userProfileCtrl,
   userUpdateCtrl,
@@ -17,21 +16,10 @@ import {
 } from '../../../../middlewares';
 import {
   changePasswordValidation,
-  registerValidation,
   updateUserValidation
 } from './validations/userValidation';
 
 const userRouter = express.Router();
-
-/**
- * @method POST::Register user
- */
-userRouter.post(
-  '/register',
-  registerValidation(),
-  isValidationResult,
-  userRegisterCtrl,
-);
 
 /**
  * @method Get::Get all user
