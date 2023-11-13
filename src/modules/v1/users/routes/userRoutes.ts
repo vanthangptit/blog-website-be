@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  userGetAllCtrl,
   userProfileCtrl,
   userUpdateCtrl,
   whoViewMyProfileCtrl,
@@ -20,11 +19,6 @@ import {
 } from './validations/userValidation';
 
 const userRouter = express.Router();
-
-/**
- * @method Get::Get all user
- */
-userRouter.get('/', userGetAllCtrl);
 
 /**
  * @method Get::Profile viewers

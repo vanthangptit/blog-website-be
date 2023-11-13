@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { IPost } from '../../models/post/Post';
+import { IPost } from './IPost';
 
 export type Plan = 'free' | 'premium' | 'pro';
 export type Gender = 'female' | 'male' | 'other';

@@ -3,20 +3,28 @@ import {
   userDeleteCtrl,
   adminBlockUserCtrl,
   adminUnblockUserCtrl,
+  adminGetAllUserCtrl,
 } from '../controllers/adminController';
 import {
-  isAuthenticated,
   isAuthenticatedWithAdmin,
 } from '../../../../middlewares';
 
 const adminRouter = express.Router();
 
 /**
+ * @method Get::Get all user
+ */
+adminRouter.get(
+  '/users',
+  isAuthenticatedWithAdmin,
+  adminGetAllUserCtrl
+);
+
+/**
  * @method PUT::Admin block user
  */
 adminRouter.put(
   '/admin-block/:id',
-  isAuthenticated,
   isAuthenticatedWithAdmin,
   adminBlockUserCtrl,
 );
@@ -26,7 +34,6 @@ adminRouter.put(
  */
 adminRouter.put(
   '/admin-unblock/:id',
-  isAuthenticated,
   isAuthenticatedWithAdmin,
   adminUnblockUserCtrl,
 );

@@ -8,26 +8,6 @@ import { User } from '../models/User';
 import { IUser } from '../../../../domain/interfaces';
 
 /**
- * Get users
- */
-export const userGetAllCtrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const users = await User.find({});
-    return res.json({
-      status: 200,
-      message: 'Get all user successfully',
-      data: users,
-    });
-  } catch (e: any) {
-    return next(appError(e.message));
-  }
-};
-
-/**
  * Get profile
  */
 export const userProfileCtrl = async (

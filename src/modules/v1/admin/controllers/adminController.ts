@@ -9,6 +9,27 @@ import { Comment} from '../../comments/models/Comment';
 import { User } from '../../users/models/User';
 
 /**
+ * Get users
+ */
+export const adminGetAllUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const users = await User.find({})
+      .select({ password: 0 });
+    return res.json({
+      status: 200,
+      message: 'Get all user successfully',
+      data: users,
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
  * Admin block
  */
 export const adminBlockUserCtrl = async (
