@@ -58,21 +58,6 @@ export const updateUserValidation = () => checkSchema({
 });
 
 /**
- * Validation change email
- */
-export const changeEmailValidation = () => checkSchema({
-  email: {
-    in: ['body'],
-    isEmail: {
-      errorMessage: 'PLease enter email valid',
-    },
-    notEmpty: {
-      errorMessage: 'The email field is required',
-    },
-  },
-});
-
-/**
  * Validation change password
  */
 export const changePasswordValidation = () => checkSchema({

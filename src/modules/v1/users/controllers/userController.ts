@@ -6,6 +6,7 @@ import {
 } from '../../../../utils';
 import { User } from '../models/User';
 import { IUser } from '../../../../domain/interfaces';
+import moment from 'moment';
 
 /**
  * Get profile
@@ -248,6 +249,14 @@ export const userUpdateCtrl = async (
     if (!user)
       return next(appError('User is not exists', 401));
 
+    if (
+      birthDay &&
+      birthDay.length &&
+      moment(birthDay).isAfter(moment(new Date()))
+    ) {
+      return next(appError('Birthday can not before date now!', 400));
+    }
+
     const userUpdated = await User.findByIdAndUpdate(
       user._id,
       {
@@ -308,6 +317,26 @@ export const updatePasswordUserCtrl = async (
     return res.json({
       status: 200,
       message: 'The password updated successful'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Check exists user
+ */
+export const checkExistsUserController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const isUsernameAvailable = await User.findOne({ email: req.params.email });
+
+    return res.json({
+      status: 200,
+      data: { isUsernameAvailable: !!isUsernameAvailable },
     });
   } catch (e: any) {
     return next(appError(e.message));

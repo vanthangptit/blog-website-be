@@ -8,6 +8,7 @@ import {
   blockUserCtrl,
   unblockUserCtrl,
   updatePasswordUserCtrl,
+  checkExistsUserController,
 } from '../controllers/userController';
 import {
   isAuthenticated,
@@ -94,6 +95,15 @@ userRouter.put(
   isValidationResult,
   isAuthenticated,
   updatePasswordUserCtrl
+);
+
+/**
+ * @method Get::Check exists email
+ */
+userRouter.get(
+  'check-exists/:email',
+  isAuthenticated,
+  checkExistsUserController,
 );
 
 export default userRouter;

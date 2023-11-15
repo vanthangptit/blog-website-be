@@ -1,14 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { validationResult } from 'express-validator';
-import { nanoid } from 'nanoid';
+import cors from 'cors';
+import csrf from 'csurf';
 
 import { User } from '../modules/v1/users/models/User';
 import {
   appError,
   getTokenFromHeader,
   verifyToken
-} from '../config/helpers';
+} from '../utils';
+import conf from '../config';
+
+const { accessDomain } = conf;
 
 /**
  * Validation login user
@@ -125,25 +129,20 @@ export async function isValidationResult(
   next();
 }
 
-// /**
-//  * @middleware Generate CSRF token
-//  */
-// function generateCSRFToken(req, res, next) {
-//   const csrfToken = nanoid(16);
-//   console.log(csrfToken)
-//   res.cookie('mycsrfToken', csrfToken);
-//   req.csrfToken = csrfToken;
-//   next();
-// }
-//
-// /**
-//  * @middleware Validate CSRF token middleware
-//  */
-// function validateCSRFToken(req, res, next) {
-//   const csrfToken = req.cookies.mycsrfToken;
-//   if (req.body.csrfToken === csrfToken) {
-//     next();
-//   } else {
-//     res.status(403).send('Invalid CSRF token');
-//   }
-// }
+/**
+ * @middleware CORS
+ */
+export const middlewareCors = cors({
+  origin: function (origin, callback) {
+    if (accessDomain.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+});
+
+/**
+ * @middleware CSRF token
+ */
+export const csrfProtection = csrf({ cookie: true });
