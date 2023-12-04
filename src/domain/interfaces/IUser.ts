@@ -4,6 +4,7 @@ import { IPost } from './IPost';
 export type Plan = 'free' | 'premium' | 'pro';
 export type Gender = 'female' | 'male' | 'other';
 export type UserAward = 'bronze' | 'silver' | 'gold';
+export type Roles = 'normal' | 'creator' | 'admin';
 
 export interface IUser extends Document {
   firstName: string
@@ -25,4 +26,5 @@ export interface IUser extends Document {
   blocked: Types.ObjectId[]
   plan: Plan
   userAward: UserAward
+  roles: Roles
 }

@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { validationResult } from 'express-validator';
 import cors from 'cors';
-import csrf from 'csurf';
 
 import { User } from '../modules/v1/users/models/User';
 import {
@@ -12,7 +11,11 @@ import {
 } from '../utils';
 import conf from '../config';
 
-const { accessDomain } = conf;
+const {
+  accessDomain,
+  accessTokenKey,
+  refreshAccessTokenKey
+} = conf;
 
 /**
  * Validation login user
@@ -26,11 +29,11 @@ export const isAuthenticated = async (
   const token = await getTokenFromHeader(req);
   if (!token)
     return next(
-      appError('There is no token attached to the header', 400)
+      appError('Access Denied. No token provided.', 401)
     );
 
   // verify the token
-  const decodedUser: any = await verifyToken(token);
+  const decodedUser: any = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
       appError('Forbidden. Please login again!', 403)
@@ -53,12 +56,15 @@ export const isAuthenticatedWithAdmin = async (
   const token = await getTokenFromHeader(req);
   if (!token) {
     return next(
-      appError('There is no token attached to the header', 400)
+      appError(
+        'Access Denied. No token provided.',
+        401
+      )
     );
   }
 
   // Verify the token
-  const decodedUser: any = await verifyToken(token);
+  const decodedUser: any = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
       appError('Forbidden. Please login again!', 403)
@@ -103,7 +109,7 @@ export const globalErrHandler = (
  * Rate limit middleware
  */
 export const rateLimitMiddleware = rateLimit({
-  windowMs: 60 * 1000,
+  windowMs: 15 * 60 * 1000,
   max: 10,
   message: 'You have exceeded your 5 requests per minute limit.',
   headers: true,
@@ -141,8 +147,3 @@ export const middlewareCors = cors({
     }
   }
 });
-
-/**
- * @middleware CSRF token
- */
-export const csrfProtection = csrf({ cookie: true });

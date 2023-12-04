@@ -45,6 +45,11 @@ const UserSchema = new Schema<IUser>({
     enum: ['female', 'male', 'other'],
     default: 'other',
   },
+  roles: {
+    type: String,
+    enum: ['normal', 'creator', 'admin'],
+    default: 'normal',
+  },
   birthDay: {
     type: String,
     required: false,

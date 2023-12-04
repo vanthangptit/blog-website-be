@@ -1,6 +1,5 @@
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
 
 import userRouter from './modules/v1/users/routes/userRoutes';
 import postRouter from './modules/v1/posts/routes/postRoutes';
@@ -8,7 +7,6 @@ import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
 import commentRouter from './modules/v1/comments/routes/commentRoutes';
 import adminRouter from './modules/v1/admin/routes/adminRoutes';
 import authRouter from './modules/v1/auth/authRoutes';
-import csrfRouter from './modules/v1/csrf/routes/csrfRoutes';
 
 import { globalErrHandler, middlewareCors } from './middlewares';
 import { connectDB } from './database/database';
@@ -23,7 +21,6 @@ const PORT = port || 9700;
 const init = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(cookieParser());
 
   //Allow access HTTP
   app.use(middlewareCors);
@@ -44,7 +41,6 @@ const init = async () => {
   app.use('/api/v1/comments', commentRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/auth', authRouter);
-  app.use('/api/v1/csrf', csrfRouter);
 
   // Error handlers middleware
   app.use(globalErrHandler);

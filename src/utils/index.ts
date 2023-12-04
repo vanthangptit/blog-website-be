@@ -1,9 +1,13 @@
 import bcrypt from 'bcryptjs';
 import conf from '../config';
 import jwt from 'jsonwebtoken';
-import {Request} from 'express';
+import { Request } from 'express';
 
-const {lengthHashSalt, accessTokenKey} = conf;
+const {
+  lengthHashSalt,
+  accessTokenKey,
+  refreshAccessTokenKey
+} = conf;
 
 export const passwordHash = (password: string) => {
   const saltRounds = parseInt(lengthHashSalt);
@@ -16,8 +20,23 @@ export const comparePassword = async (passwordReq: string, password: string) => 
   return bcrypt.compareSync(passwordReq, password);
 };
 
-export const generateToken = (id: any) => {
-  return jwt.sign({id}, accessTokenKey, {expiresIn: '24h'});
+export const generateTokens = (id: any) => {
+  const payload = { id };
+  const accessToken = jwt.sign(
+    payload,
+    accessTokenKey,
+    { expiresIn: '14m' }
+  );
+  const refreshToken = jwt.sign(
+    payload,
+    refreshAccessTokenKey,
+    { expiresIn: '30d' }
+  );
+
+  return {
+    accessToken,
+    refreshToken
+  }
 };
 
 export const getTokenFromHeader = async (req: Request) => {
@@ -25,12 +44,11 @@ export const getTokenFromHeader = async (req: Request) => {
   if (!token) {
     return null;
   }
-
   return token;
 };
 
-export const verifyToken = (token: string) => {
-  return jwt.verify(token, accessTokenKey, (error: any, data: any) => {
+export const verifyToken = (token: string, tokenSecretKey: string) => {
+  return jwt.verify(token, tokenSecretKey, (error: any, data: any) => {
     if (error) {
       return false;
     }
