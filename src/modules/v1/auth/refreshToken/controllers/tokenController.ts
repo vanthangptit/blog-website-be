@@ -1,7 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
+import { startSession } from 'mongoose';
 
-import {appError, generateTokens, verifyToken} from '../../../../../utils';
 import { Token } from '../models/Token';
+import { User } from '../../../users/models/User';
+import {
+  appError,
+  generateTokens,
+  verifyToken
+} from '../../../../../utils';
+import { deleteRefreshToken } from '../services/tokenServices';
+
 import conf from '../../../../../config';
 
 export const getTokenCtrl = async (
@@ -13,7 +21,8 @@ export const getTokenCtrl = async (
 
   try {
     const userTokenFound = await Token.findOne({ refreshToken, user: userId });
-    if (!userTokenFound || !userTokenFound.isValid)
+    const userFound = await User.findById(userId);
+    if (!userTokenFound || !userFound)
       return next(appError('Access Denied. No token provided or invalid refresh token', 401));
 
     const token: any = await verifyToken(
@@ -21,6 +30,7 @@ export const getTokenCtrl = async (
       conf.refreshAccessTokenKey
     );
 
+    // If expired token. User must have login again
     if (!token)
       return next(
         appError('Forbidden. Please login again!', 403)
@@ -44,19 +54,27 @@ export const deleteTokenCtrl = async (
   next: NextFunction
 ) => {
   const { refreshToken, userId } = req.body;
+  const session = await startSession();
+  session.startTransaction();
 
   try {
     const userTokenFound = await Token.findOne({ refreshToken, user: userId });
-    if (!userTokenFound)
+    const userFound = await User.findById(userId);
+
+    if (!userTokenFound || !userFound)
       return next(appError('Access Denied. Invalid refresh token', 401));
 
-    await Token.deleteMany({ refreshToken, user: userId });
+    await deleteRefreshToken(userId, session);
+    await session.commitTransaction();
+    await session.endSession();
 
     return res.json({
       status: 200,
       message: 'Logged out Successfully',
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };

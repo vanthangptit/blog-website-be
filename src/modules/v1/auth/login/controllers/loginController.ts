@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
-
-import { comparePassword, generateTokens, appError } from '../../../../../utils';
-import { User } from '../../../users/models/User';
-import { Token } from '../../refreshToken/models/Token';
 import { startSession } from 'mongoose';
+import {
+  comparePassword,
+  generateTokens,
+  appError,
+} from '../../../../../utils';
+import { User } from '../../../users/models/User';
+import {
+  createRefreshToken,
+  deleteRefreshToken,
+} from '../../refreshToken/services/tokenServices';
 
 export const loginCtrl = async (
   req: Request,
@@ -24,20 +30,15 @@ export const loginCtrl = async (
       return next(appError('Email or password invalid.', 400));
 
     const { accessToken, refreshToken } = generateTokens(userFound._id);
-    const userToken = await Token.findOne({ user: userFound._id });
 
-    if (userToken) {
-      if (!userToken.isValid)
-        return next(appError('Invalid Credentials', 401));
-    } else {
-      await Token.create([{
-        user: userFound._id,
-        refreshToken,
-        userAgent: req.headers['user-agent'],
-        ip: req.ip
-      }], { session });
-    }
-
+    await deleteRefreshToken(userFound._id, session);
+    await createRefreshToken(
+      userFound._id,
+      refreshToken,
+      req.headers['user-agent'] ?? '',
+      req.ip,
+      session
+    );
     await session.commitTransaction();
     await session.endSession();
 
@@ -49,10 +50,12 @@ export const loginCtrl = async (
           roles: userFound.roles
         },
         accessToken,
-        refreshToken: userToken?.refreshToken ?? refreshToken,
+        refreshToken: refreshToken,
       },
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };

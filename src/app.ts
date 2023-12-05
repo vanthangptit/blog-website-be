@@ -30,6 +30,11 @@ const init = async () => {
    * Reference: https://blog.logrocket.com/caching-node-js-optimize-app-performance/
    **/
 
+  /** @todo
+   * Handle multiple requests at the same time
+   * https://www.quora.com/What-happens-if-a-Node-js-server-receives-two-requests-at-the-same-time
+   **/
+
   // Routes
   app.get('/', (req: Request, res: Response) => {
     res.send('Welcome to my website')

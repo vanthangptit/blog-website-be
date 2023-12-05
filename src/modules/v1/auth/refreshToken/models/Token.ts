@@ -7,6 +7,9 @@ const TokenSchema = new Schema<IToken>({
     required: true,
     trim: true,
   },
+  /**
+   * @todo Analyst user with user agent and IP address
+   */
   ip: {
     type: String,
     required: true,
@@ -14,10 +17,6 @@ const TokenSchema = new Schema<IToken>({
   userAgent: {
     type: String,
     required: true,
-  },
-  isValid: {
-    type: Boolean,
-    default: true,
   },
   user: {
     type: Schema.Types.ObjectId,
