@@ -4,6 +4,7 @@ import {
   comparePassword,
   generateTokens,
   appError,
+  setCookie,
 } from '../../../../../utils';
 import { User } from '../../../users/models/User';
 import {
@@ -46,12 +47,7 @@ export const loginCtrl = async (
     await session.commitTransaction();
     await session.endSession();
 
-    res.cookie(AUTH_COOKIE_NAME, newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    setCookie(res, AUTH_COOKIE_NAME, newRefreshToken);
     return res.json({
       statusCode: 200,
       message: 'User logged in Successfully',

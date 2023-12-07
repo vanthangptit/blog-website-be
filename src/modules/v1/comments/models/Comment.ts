@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IComment } from '../../../../domain/interfaces';
+import { ICommentModel } from '../../../../domain/interfaces';
 
-const CommentSchema = new Schema<IComment>({
+const CommentSchema = new Schema<ICommentModel>({
   post: {
     type: Schema.Types.ObjectId,
     ref: 'Post',
@@ -18,4 +18,4 @@ const CommentSchema = new Schema<IComment>({
 }, { timestamps: true });
 
 // Compile the comment model
-export const Comment = model<IComment>('Comment', CommentSchema);
+export const Comment = model<ICommentModel>('Comment', CommentSchema);

@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose';
 import {
-  IEmailVerification
-} from '../../../../domain/interfaces/IEmail';
+  IEmailVerificationModel
+} from '../../../../domain/interfaces';
 
-const EmailVerificationSchema = new Schema<IEmailVerification>({
+const EmailVerificationSchema = new Schema<IEmailVerificationModel>({
   token: {
     type: String,
     required: true,
@@ -19,7 +19,7 @@ const EmailVerificationSchema = new Schema<IEmailVerification>({
 });
 
 // Compile the user model
-export const EmailVerification = model<IEmailVerification>(
+export const EmailVerification = model<IEmailVerificationModel>(
   'EmailVerification',
   EmailVerificationSchema
 );

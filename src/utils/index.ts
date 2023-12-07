@@ -1,10 +1,9 @@
 import bcrypt from 'bcryptjs';
 import conf from '../config';
 import jwt from 'jsonwebtoken';
-import { Request } from 'express';
-import {
-  IFPayloadToken,
-} from '../domain/interfaces/IPayloadToken';
+import { Request, Response } from 'express';
+import { IFPayloadToken } from '../domain/interfaces';
+import { NameCookies } from '../domain/interfaces/IFCookie';
 
 const {
   lengthHashSalt,
@@ -62,4 +61,28 @@ export const appError = (message: string, statusCode?: number) => {
   let error: any = new Error(message);
   error.statusCode = statusCode ? statusCode : 500;
   return error;
+};
+
+export const setCookie = (
+  res: Response,
+  nameCookie: NameCookies,
+  valueCookie: any
+): void => {
+  res.cookie(`${nameCookie}`, valueCookie, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    maxAge: 24 * 60 * 60 * 1000
+  });
+};
+
+export const clearCookie = (
+  res: Response,
+  nameCookie: NameCookies
+): void => {
+  res.clearCookie(`${nameCookie}`, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+  });
 };

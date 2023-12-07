@@ -9,7 +9,7 @@ import {
 } from '../../../../domain/email-templates';
 import {
   IMailOptions
-} from '../../../../domain/interfaces/IEmail';
+} from '../../../../domain/interfaces';
 
 const {
   googleClientId,

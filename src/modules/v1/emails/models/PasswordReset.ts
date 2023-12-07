@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose';
 import {
-  IPasswordReset
-} from '../../../../domain/interfaces/IEmail';
+  IPasswordResetModel
+} from '../../../../domain/interfaces';
 
-const PasswordResetSchema = new Schema<IPasswordReset>({
+const PasswordResetSchema = new Schema<IPasswordResetModel>({
   code: {
     type: String,
     required: true,
@@ -19,7 +19,7 @@ const PasswordResetSchema = new Schema<IPasswordReset>({
 });
 
 // Compile the user model
-export const PasswordReset = model<IPasswordReset>(
+export const PasswordReset = model<IPasswordResetModel>(
   'PasswordReset',
   PasswordResetSchema
 );

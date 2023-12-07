@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { IUser } from './IUser';
+import { IUserModel } from './IUser';
 
 export type PostType =
   'society' |
@@ -14,7 +14,7 @@ export type PostType =
   'life' |
   'diary';
 
-export interface IPost extends Document {
+export interface IPostModel extends Document {
   title: string
   excerpt: string
   description: string
@@ -28,7 +28,7 @@ export interface IPost extends Document {
   numViews: Types.ObjectId[]
   likes: Types.ObjectId[]
   disLikes: Types.ObjectId[]
-  user: IUser,
+  user: IUserModel,
   createdAt: number
   updatedAt: number
 }

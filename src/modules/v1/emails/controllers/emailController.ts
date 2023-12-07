@@ -26,7 +26,9 @@ export const verifyEmailController = async (
       });
 
     if (!emailVerification)
-      return next(appError(`Verify email called with invalid email token ${token}`, 400));
+      return next(
+        appError(`Verify email called with invalid email token ${token}`, 400)
+      );
 
     const dateIsAfter  = moment(emailVerification.validUntil).isAfter(moment(new Date()));
     if (emailVerification && dateIsAfter) {
@@ -36,7 +38,9 @@ export const verifyEmailController = async (
 
       res.redirect(conf.email.urlLogin)
     } else {
-      return next(appError(`Verify email called with invalid email token ${token}`, 400));
+      return next(
+        appError(`Verify email called with invalid email token ${token}`, 400)
+      );
     }
   } catch (e: any) {
     return next(appError(e.message));

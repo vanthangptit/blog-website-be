@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IPost } from '../../../../domain/interfaces';
+import { IPostModel } from '../../../../domain/interfaces';
 
-const PostSchema = new Schema<IPost>({
+const PostSchema = new Schema<IPostModel>({
   title: {
     type: String,
     required: [true, 'Post title is required'],
@@ -121,4 +121,4 @@ PostSchema.pre(/^find/, async function(next) {
 });
 
 // Compile the post model
-export const Post = model<IPost>('Post', PostSchema);
+export const Post = model<IPostModel>('Post', PostSchema);

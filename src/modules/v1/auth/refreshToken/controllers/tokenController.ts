@@ -5,7 +5,9 @@ import { Token } from '../models/Token';
 import { User } from '../../../users/models/User';
 import {
   appError,
+  clearCookie,
   generateTokens,
+  setCookie,
   verifyToken
 } from '../../../../../utils';
 import { deleteRefreshToken } from '../services/tokenServices';
@@ -13,7 +15,7 @@ import { deleteRefreshToken } from '../services/tokenServices';
 import conf from '../../../../../config';
 import {
   IFPayloadToken
-} from '../../../../../domain/interfaces/IPayloadToken';
+} from '../../../../../domain/interfaces';
 import { AUTH_COOKIE_NAME } from '../../../../../domain/constants';
 
 export const getTokenCtrl = async (
@@ -24,10 +26,15 @@ export const getTokenCtrl = async (
   const cookies = req.cookies;
 
   if (!cookies?.jwt)
-    return next(appError('Access Denied. No token provided or invalid refresh token', 401));
+    return next(
+      appError(
+      'Access Denied. No token provided or invalid refresh token',
+      401
+      )
+    );
 
   const refreshToken = cookies.jwt;
-  res.clearCookie(AUTH_COOKIE_NAME, { httpOnly: true, sameSite: 'none', secure: true });
+  clearCookie(res, AUTH_COOKIE_NAME);
 
   try {
     const userTokenFound = await Token.findOne({ refreshToken }).exec();
@@ -66,12 +73,7 @@ export const getTokenCtrl = async (
     userTokenFound.refreshToken = newRefreshToken;
     await userTokenFound.save();
 
-    res.cookie(AUTH_COOKIE_NAME, newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 24 * 60 * 60 * 1000
-    });
+    setCookie(res, AUTH_COOKIE_NAME, newRefreshToken);
     return res.json({
       statusCode: 200,
       message: 'Get access token successful',

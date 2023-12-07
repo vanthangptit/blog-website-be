@@ -1,6 +1,6 @@
 import { Document, Types } from 'mongoose';
 
-export interface ICategory extends Document {
+export interface ICategoryModel extends Document {
   title: string
   user: Types.ObjectId
   createdAt: number

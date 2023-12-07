@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IToken } from '../../../../../domain/interfaces';
+import { ITokenModel } from '../../../../../domain/interfaces';
 
-const TokenSchema = new Schema<IToken>({
+const TokenSchema = new Schema<ITokenModel>({
   refreshToken: {
     type: String,
     trim: true,
@@ -27,4 +27,4 @@ const TokenSchema = new Schema<IToken>({
 });
 
 // Compile the post model
-export const Token = model<IToken>('Token', TokenSchema);
+export const Token = model<ITokenModel>('Token', TokenSchema);

@@ -10,7 +10,7 @@ import {
   verifyToken
 } from '../utils';
 import conf from '../config';
-import {IFPayloadToken} from '../domain/interfaces/IPayloadToken';
+import { IFPayloadToken } from '../domain/interfaces';
 
 const { accessDomain, accessTokenKey } = conf;
 

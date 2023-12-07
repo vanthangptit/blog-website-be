@@ -1,12 +1,12 @@
 import { Document, Types } from 'mongoose';
-import { IPost } from './IPost';
+import { IPostModel } from './IFPost';
 
 export type Plan = 'free' | 'premium' | 'pro';
 export type Gender = 'female' | 'male' | 'other';
 export type UserAward = 'bronze' | 'silver' | 'gold';
 export type Roles = 'normal' | 'creator' | 'admin';
 
-export interface IUser extends Document {
+export interface IUserModel extends Document {
   firstName: string
   lastName: string
   email: string
@@ -21,7 +21,7 @@ export interface IUser extends Document {
   viewers: Types.ObjectId[]
   followers: Types.ObjectId[]
   following: Types.ObjectId[]
-  posts: IPost[]
+  posts: IPostModel[]
   comments: Types.ObjectId[]
   blocked: Types.ObjectId[]
   plan: Plan

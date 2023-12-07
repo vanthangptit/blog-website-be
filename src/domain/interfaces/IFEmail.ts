@@ -1,19 +1,19 @@
 import { Document, Types } from 'mongoose';
 
-export interface IEmailVerification extends Document {
+export interface IEmailVerificationModel extends Document {
   token: string
   user: Types.ObjectId
   validUntil: Date
 }
 
-export interface IEmailChange extends Document {
+export interface IEmailChangeModel extends Document {
   token: string
   newEmail: string
   user: Types.ObjectId
   validUntil: Date
 }
 
-export interface IPasswordReset extends Document {
+export interface IPasswordResetModel extends Document {
   code: string
   user: Types.ObjectId
   validUntil: Date

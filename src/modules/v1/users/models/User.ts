@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose';
-import { IUser } from '../../../../domain/interfaces';
+import { IUserModel } from '../../../../domain/interfaces';
 import { Post } from '../../posts/models/Post';
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<IUserModel>({
   firstName: {
     type: String,
     required: [true, 'First Name is required'],
@@ -205,4 +205,4 @@ UserSchema.virtual('blockedCounts').get(function() {
 });
 
 // Compile the user model
-export const User = model<IUser>('User', UserSchema);
+export const User = model<IUserModel>('User', UserSchema);

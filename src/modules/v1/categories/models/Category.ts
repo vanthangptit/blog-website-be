@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { ICategory } from '../../../../domain/interfaces';
+import { ICategoryModel } from '../../../../domain/interfaces';
 
-const CategorySchema = new Schema<ICategory>({
+const CategorySchema = new Schema<ICategoryModel>({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -14,4 +14,4 @@ const CategorySchema = new Schema<ICategory>({
 }, { timestamps: true });
 
 // Compile the category model
-export const Category = model<ICategory>('Category', CategorySchema);
+export const Category = model<ICategoryModel>('Category', CategorySchema);

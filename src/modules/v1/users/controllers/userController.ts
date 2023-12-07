@@ -5,7 +5,7 @@ import {
   appError
 } from '../../../../utils';
 import { User } from '../models/User';
-import { IUser } from '../../../../domain/interfaces';
+import { IUserModel } from '../../../../domain/interfaces';
 import moment from 'moment';
 
 /**
@@ -18,7 +18,7 @@ export const userProfileCtrl = async (
 ) => {
   const { id } = req.params;
   try {
-    const user: IUser | null = await User.findById(id)
+    const user: IUserModel | null = await User.findById(id)
       .select({ password: 0 })
       .populate({
       path: 'posts',
@@ -56,7 +56,9 @@ export const whoViewMyProfileCtrl = async (
     }
 
     //4. Check if userWhoViewed is already in the users viewers array
-    const isUserAlreadyViewed = user.viewers.find(viewer => viewer.toString() === userWhoViewed._id.toJSON());
+    const isUserAlreadyViewed = user.viewers.find(
+      viewer => viewer.toString() === userWhoViewed._id.toJSON()
+    );
     if (isUserAlreadyViewed) {
       return next(appError('You already viewed this profile', 401));
     }
@@ -94,7 +96,9 @@ export const followingCtrl = async (
     }
 
     //3. Check if userWhoFollowed is already in the users followers array
-    const isUserAlreadyFollowed = userToFollow.following.find(follower => follower.toString() === userWhoFollowed._id.toJSON());
+    const isUserAlreadyFollowed = userToFollow.following.find(
+      follower => follower.toString() === userWhoFollowed._id.toJSON()
+    );
     if (isUserAlreadyFollowed) {
       return next(appError('You already followed this user', 401));
     }
@@ -136,16 +140,22 @@ export const unfollowCtrl = async (
     }
 
     //4. Check if userWhoUnFollowed is already in the users followers array
-    const isUserAlreadyFollowed = userToBeUnfollowed.followers.find(follower => follower.toString() === userWhoUnFollowed._id.toJSON());
+    const isUserAlreadyFollowed = userToBeUnfollowed.followers.find(
+      follower => follower.toString() === userWhoUnFollowed._id.toJSON()
+    );
     if (!isUserAlreadyFollowed) {
       return next(appError('You have not followed this user', 401));
     }
 
     //5. Remove userWhoUnFollowed to the user's followers array
-    userToBeUnfollowed.followers = userToBeUnfollowed.followers.filter(follower => follower.toString() !== userWhoUnFollowed._id.toJSON());
+    userToBeUnfollowed.followers = userToBeUnfollowed.followers.filter(
+      follower => follower.toString() !== userWhoUnFollowed._id.toJSON()
+    );
     await userToBeUnfollowed.save();
     //6. Remove userToBeUnfollowed from userWhoUnFollowed's following array
-    userWhoUnFollowed.following = userWhoUnFollowed.following.filter(following => following.toString() !== userToBeUnfollowed._id.toJSON());
+    userWhoUnFollowed.following = userWhoUnFollowed.following.filter(
+      following => following.toString() !== userToBeUnfollowed._id.toJSON()
+    );
     await userWhoUnFollowed.save();
 
     return res.status(200).json({
@@ -177,7 +187,9 @@ export const blockUserCtrl = async (
     }
 
     //4. Check if userWhoVBlocked is already in the users blocked array
-    const isUserAlreadyBlocked = userWhoBlocked.blocked.find(blocker => blocker.toString() === userToBeBlocked._id.toJSON());
+    const isUserAlreadyBlocked = userWhoBlocked.blocked.find(
+      blocker => blocker.toString() === userToBeBlocked._id.toJSON()
+    );
     if (isUserAlreadyBlocked) {
       return next(appError('You already blocked this profile', 401));
     }
@@ -216,13 +228,17 @@ export const unblockUserCtrl = async (
     }
 
     //4. Check if userWhoUnblocked is already in the array's of userWhoUnBlocked
-    const isUserAlreadyBlocked = userWhoUnBlocked.blocked.find(blocker => blocker.toString() === userToBeUnBlocked._id.toJSON());
+    const isUserAlreadyBlocked = userWhoUnBlocked.blocked.find(
+      blocker => blocker.toString() === userToBeUnBlocked._id.toJSON()
+    );
     if (isUserAlreadyBlocked) {
       return next(appError('You already unblocked this user', 401));
     }
 
     //5. Push the user userToBeBlocked to the user's blocked array
-    userWhoUnBlocked.blocked = userWhoUnBlocked.blocked.filter(blocker => blocker.toString() !== userToBeUnBlocked._id.toJSON());
+    userWhoUnBlocked.blocked = userWhoUnBlocked.blocked.filter(
+      blocker => blocker.toString() !== userToBeUnBlocked._id.toJSON()
+    );
     //6. Save the user
     await userWhoUnBlocked.save();
 
