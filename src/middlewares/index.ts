@@ -10,12 +10,9 @@ import {
   verifyToken
 } from '../utils';
 import conf from '../config';
+import {IFPayloadToken} from '../domain/interfaces/IPayloadToken';
 
-const {
-  accessDomain,
-  accessTokenKey,
-  refreshAccessTokenKey
-} = conf;
+const { accessDomain, accessTokenKey } = conf;
 
 /**
  * Validation login user
@@ -25,21 +22,18 @@ export const isAuthenticated = async (
   res: Response,
   next: NextFunction
 ) => {
-  // get token from header
   const token = await getTokenFromHeader(req);
   if (!token)
     return next(
       appError('Access Denied. No token provided.', 401)
     );
 
-  // verify the token
-  const decodedUser: any = await verifyToken(token, accessTokenKey);
+  const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
       appError('Forbidden. Please login again!', 403)
     );
 
-  // save the user into req object
   req.body.userAuth = decodedUser;
   next();
 };
@@ -52,7 +46,6 @@ export const isAuthenticatedWithAdmin = async (
   res: Response,
   next: NextFunction
 ) => {
-  // Get token from header
   const token = await getTokenFromHeader(req);
   if (!token) {
     return next(
@@ -63,14 +56,12 @@ export const isAuthenticatedWithAdmin = async (
     );
   }
 
-  // Verify the token
-  const decodedUser: any = await verifyToken(token, accessTokenKey);
+  const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
       appError('Forbidden. Please login again!', 403)
     );
 
-  // Find the user in DB
   const user = await User.findById(decodedUser.id);
   if (!user) {
     return next(
@@ -79,7 +70,6 @@ export const isAuthenticatedWithAdmin = async (
   }
 
   if (user.isAdmin) {
-    // Save the user into req object
     req.body.userAuth = decodedUser;
     next();
   } else {
@@ -127,8 +117,6 @@ export async function isValidationResult(
 ) {
   const errors: any = validationResult(req);
   if (!errors.isEmpty()) {
-    // eslint-disable-next-line no-console
-    console.log(errors);
     return res.status(400).send(errors?.errors[0]?.msg);
   }
 
@@ -145,5 +133,9 @@ export const middlewareCors = cors({
     } else {
       callback(new Error('Not allowed by CORS'))
     }
-  }
+  },
+  methods: ['GET', 'PUT', 'POST', 'PATCH', 'OPTIONS', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token', 'Accept'],
+  credentials: true,
+  exposedHeaders: ['*', 'Authorization' ]
 });

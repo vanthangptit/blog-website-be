@@ -20,7 +20,7 @@ export const adminGetAllUserCtrl = async (
     const users = await User.find({})
       .select({ password: 0 });
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Get all user successfully',
       data: users,
     });
@@ -104,7 +104,7 @@ export const userDeleteCtrl = async (
     await User.findByIdAndDelete(req.body.userAuth.id);
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'User deleted successfully',
     });
   } catch (e: any) {

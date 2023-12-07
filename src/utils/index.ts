@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs';
 import conf from '../config';
 import jwt from 'jsonwebtoken';
 import { Request } from 'express';
+import {
+  IFPayloadToken,
+} from '../domain/interfaces/IPayloadToken';
 
 const {
   lengthHashSalt,
@@ -20,17 +23,17 @@ export const comparePassword = async (passwordReq: string, password: string) => 
   return bcrypt.compareSync(passwordReq, password);
 };
 
-export const generateTokens = (id: any) => {
-  const payload = { id };
+export const generateTokens = (id: string) => {
+  const payload: IFPayloadToken = { id };
   const accessToken = jwt.sign(
     payload,
     accessTokenKey,
-    { expiresIn: '14m' }
+    { expiresIn: '10m' }
   );
   const refreshToken = jwt.sign(
     payload,
     refreshAccessTokenKey,
-    { expiresIn: '30d' }
+    { expiresIn: '1d' }
   );
 
   return {
@@ -47,13 +50,12 @@ export const getTokenFromHeader = async (req: Request) => {
   return token;
 };
 
-export const verifyToken = (token: string, tokenSecretKey: string) => {
-  return jwt.verify(token, tokenSecretKey, (error: any, data: any) => {
-    if (error) {
-      return false;
-    }
-    return data;
-  });
+export const verifyToken = async (token: string, tokenSecretKey: string): Promise<IFPayloadToken | undefined> => {
+  try {
+    return jwt.verify(token, tokenSecretKey) as IFPayloadToken;
+  } catch (e) {
+    return;
+  }
 };
 
 export const appError = (message: string, statusCode?: number) => {

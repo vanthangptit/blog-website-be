@@ -27,7 +27,7 @@ export const getAllPostCtrl = async (
     });
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Get all post successfully',
       data: filteredPosts,
     });
@@ -59,7 +59,7 @@ export const toggleLikesCtrl = async (
 
     await post.save();
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'You have successfully liked the post',
       data: post,
     });
@@ -90,7 +90,7 @@ export const toggleDisLikesCtrl = async (
 
     await post.save();
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'You have successfully dislike the post',
     });
   } catch (e: any) {
@@ -118,7 +118,7 @@ export const getPostByIdCtrl = async (
     }
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       data: post,
       message: 'Get the post successfully',
     });
@@ -179,7 +179,7 @@ export const createPostCtrl = async (
     await author.save();
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'The post was created successfully',
       data: postCreated,
     });
@@ -222,7 +222,7 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
     });
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Post updated',
     });
   } catch (e: any) {
@@ -243,7 +243,7 @@ export const deletePostCtrl = async (req: Request, res: Response, next: NextFunc
 
     await Post.findByIdAndDelete(req.params.id);
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Post deleted',
     });
   } catch (e: any) {

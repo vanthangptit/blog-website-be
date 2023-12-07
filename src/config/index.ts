@@ -5,7 +5,6 @@ dotenv.config();
 
 function config() {
   const {
-    NODE_ENV: envConf,
     APP_PORT: port,
     MONGO_DB: dbName,
     MONGO_USERNAME_DB: dbUsername,
@@ -21,7 +20,7 @@ function config() {
   } = process.env;
 
   const conf = JSON.parse(
-    fs.readFileSync(`${__dirname}/../../jsonFiles/${envConf ?? 'development'}.json`).toString()
+    fs.readFileSync(`${__dirname}/../../jsonFiles/${process.env.NODE_ENV ?? 'development'}.json`).toString()
   );
 
   return {

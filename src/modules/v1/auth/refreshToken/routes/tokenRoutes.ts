@@ -8,12 +8,7 @@ const tokenRouter = express.Router();
 /**
  * @method POST::Get new access token
  */
-tokenRouter.post(
-  '/',
-  tokenValidation(),
-  isValidationResult,
-  getTokenCtrl
-);
+tokenRouter.get('/', getTokenCtrl);
 
 /**
  * @method DELETE::Delete token

@@ -4,7 +4,6 @@ import { IToken } from '../../../../../domain/interfaces';
 const TokenSchema = new Schema<IToken>({
   refreshToken: {
     type: String,
-    required: true,
     trim: true,
   },
   /**

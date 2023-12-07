@@ -33,7 +33,7 @@ export const commentCreateCtrl = async (
     await post.save();
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Comment successfully',
       data: comment,
     });
@@ -77,7 +77,7 @@ export const commentUpdateCtrl = async (
     );
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Comment updated',
       data: commentNew,
     });
@@ -111,7 +111,7 @@ export const commentDeleteCtrl = async (
     await Comment.findByIdAndDelete(req.params.id);
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Comment deleted',
     });
   } catch (e: any) {

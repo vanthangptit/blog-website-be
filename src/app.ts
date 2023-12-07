@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 
 import userRouter from './modules/v1/users/routes/userRoutes';
 import postRouter from './modules/v1/posts/routes/postRoutes';
@@ -24,6 +25,9 @@ const init = async () => {
 
   //Allow access HTTP
   app.use(middlewareCors);
+
+  //middleware for cookies
+  app.use(cookieParser());
 
   /** @todo
    * Use caching data (suggestion: Redis)

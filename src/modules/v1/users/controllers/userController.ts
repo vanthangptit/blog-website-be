@@ -273,7 +273,7 @@ export const userUpdateCtrl = async (
     );
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       data: userUpdated,
       message: 'User updated successful'
     });
@@ -315,7 +315,7 @@ export const updatePasswordUserCtrl = async (
     );
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'The password updated successful'
     });
   } catch (e: any) {
@@ -335,7 +335,7 @@ export const checkExistsUserController = async (
     const isUsernameAvailable = await User.findOne({ email: req.params.email });
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       data: { isUsernameAvailable: !!isUsernameAvailable },
     });
   } catch (e: any) {

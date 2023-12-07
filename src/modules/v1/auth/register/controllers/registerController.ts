@@ -48,7 +48,7 @@ export const registerCtrl = async (
     await session.endSession();
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'User created successful',
     });
   } catch (e: any) {

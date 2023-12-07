@@ -8,6 +8,6 @@ const authRouter = express.Router();
 
 authRouter.use('/login', loginRouter);
 authRouter.use('/register', registerRouter);
-authRouter.use('/refreshToken', tokenRouter);
+authRouter.use('/refresh-token', tokenRouter);
 
 export default authRouter;

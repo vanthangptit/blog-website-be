@@ -1,1 +1,1 @@
-export const TEST_MODE = process.env.REACT_APP_TEST_MODE;
+export const AUTH_COOKIE_NAME = 'authToken';

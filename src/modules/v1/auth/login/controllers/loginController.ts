@@ -10,6 +10,7 @@ import {
   createRefreshToken,
   deleteRefreshToken,
 } from '../../refreshToken/services/tokenServices';
+import { AUTH_COOKIE_NAME } from '../../../../../domain/constants';
 
 export const loginCtrl = async (
   req: Request,
@@ -21,7 +22,7 @@ export const loginCtrl = async (
   session.startTransaction();
 
   try {
-    const userFound = await User.findOne({ email });
+    const userFound = await User.findOne({ email }).exec();
     if (!userFound)
       return next(appError('Email not found', 404));
 
@@ -29,12 +30,15 @@ export const loginCtrl = async (
     if (!isPasswordMatched)
       return next(appError('Email or password invalid.', 400));
 
-    const { accessToken, refreshToken } = generateTokens(userFound._id);
+    const {
+      accessToken,
+      refreshToken: newRefreshToken
+    } = generateTokens(userFound._id.toString());
 
     await deleteRefreshToken(userFound._id, session);
     await createRefreshToken(
       userFound._id,
-      refreshToken,
+      newRefreshToken,
       req.headers['user-agent'] ?? '',
       req.ip,
       session
@@ -42,15 +46,20 @@ export const loginCtrl = async (
     await session.commitTransaction();
     await session.endSession();
 
+    res.cookie(AUTH_COOKIE_NAME, newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000
+    });
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'User logged in Successfully',
       data: {
         user: {
           roles: userFound.roles
         },
         accessToken,
-        refreshToken: refreshToken,
       },
     });
   } catch (e: any) {

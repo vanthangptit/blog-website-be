@@ -15,7 +15,7 @@ export const fetchCategoriesCtrl = async (
   try {
     const categories = await Category.find({});
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Get all the category successfully',
       data: categories,
     });
@@ -39,7 +39,7 @@ export const categoryDetailCtrl = async (
     }
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Category got successfully',
       data: category,
     });
@@ -70,7 +70,7 @@ export const categoryCreateCtrl = async (
     });
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Category created',
       data: category,
     });
@@ -112,7 +112,7 @@ export const categoryUpdateCtrl = async (
     );
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Category updated',
       data: categoryNew,
     });
@@ -145,7 +145,7 @@ export const categoryDeleteCtrl = async (
     await Category.findByIdAndDelete(req.params.id);
 
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Category deleted',
     });
   } catch (e: any) {
