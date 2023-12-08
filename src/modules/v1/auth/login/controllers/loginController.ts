@@ -51,12 +51,11 @@ export const loginCtrl = async (
     return res.json({
       statusCode: 200,
       message: 'User logged in Successfully',
-      data: {
-        user: {
-          roles: userFound.roles
-        },
-        accessToken,
+      user: {
+        roles: userFound.roles,
+        fullName: userFound.fullName
       },
+      accessToken,
     });
   } catch (e: any) {
     await session.abortTransaction();

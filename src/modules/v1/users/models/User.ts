@@ -20,6 +20,20 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     required: false,
   },
+  profilePhoto: {
+    type: String,
+    required: false,
+  },
+  gender: {
+    type: String,
+    enum: ['female', 'male', 'other'],
+    default: 'other',
+  },
+  birthDay: {
+    type: String,
+    required: false,
+  },
+
   isLoginGoogle: {
     type: Boolean,
     default: false,
@@ -36,23 +50,10 @@ const UserSchema = new Schema<IUserModel>({
     type: Boolean,
     default: false,
   },
-  profilePhoto: {
-    type: String,
-    required: false,
-  },
-  gender: {
-    type: String,
-    enum: ['female', 'male', 'other'],
-    default: 'other',
-  },
   roles: {
     type: String,
     enum: ['normal', 'creator', 'admin'],
     default: 'normal',
-  },
-  birthDay: {
-    type: String,
-    required: false,
   },
   viewers: [
     {

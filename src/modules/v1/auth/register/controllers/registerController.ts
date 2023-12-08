@@ -12,7 +12,7 @@ export const registerCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { firstName, lastName, profilePhoto, email, password, passwordConfirm } = req.body;
+  const { firstName, lastName, email, password, passwordConfirm } = req.body;
   const session = await startSession();
   session.startTransaction();
 
@@ -27,7 +27,6 @@ export const registerCtrl = async (
     const user = await User.create([{
       firstName,
       lastName,
-      profilePhoto,
       email,
       password: await passwordHash(password)
     }], { session  });

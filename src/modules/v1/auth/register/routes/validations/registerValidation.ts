@@ -43,88 +43,14 @@ export const registerValidation = () => checkSchema({
       errorMessage: 'Password must contain at least one number, lower case, upper case and enter 8 or more characters'
     }
   },
-  isLoginGoogle: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    isBoolean: {
-      errorMessage: 'The isLoginGoogle must be a boolean.',
-    }
-  },
-  isAdmin: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    isBoolean: {
-      errorMessage: 'The isAdmin must be a boolean.',
-    }
-  },
-  role: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
+  passwordConfirm: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The confirmPassword field is required',
     },
     matches: {
-      options: [/\b(?:admin|creator|editor|normal)\b/],
-      errorMessage: 'Invalid role type',
-    },
-  },
-  profilePhoto: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    isString: {
-      errorMessage: 'The profilePhoto must be a string.',
+      options: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+      errorMessage: 'confirmPassword must contain at least one number, lower case, upper case and enter 8 or more characters'
     }
   },
-  gender: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    matches: {
-      options: [/\b(?:female|male|other)\b/],
-      errorMessage: 'Invalid gender type',
-    },
-  },
-  birthDay: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    isString: {
-      errorMessage: 'The profilePhoto must be a string.',
-    }
-  },
-  plan: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    matches: {
-      options: [/\b(?:free|premium|pro)\b/],
-      errorMessage: 'Invalid plan type',
-    },
-  },
-  userAward: {
-    optional: {
-      options: {
-        checkFalsy: true
-      }
-    },
-    matches: {
-      options: [/\b(?:bronze|silver|gold)\b/],
-      errorMessage: 'Invalid userAward type',
-    },
-  }
 });
