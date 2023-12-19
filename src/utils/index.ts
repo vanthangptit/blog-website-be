@@ -27,12 +27,12 @@ export const generateTokens = (id: string) => {
   const accessToken = jwt.sign(
     payload,
     accessTokenKey,
-    { expiresIn: '10m' }
+    { expiresIn: '5m' }
   );
   const refreshToken = jwt.sign(
     payload,
     refreshAccessTokenKey,
-    { expiresIn: '1d' }
+    { expiresIn: '7d' }
   );
 
   return {
@@ -42,7 +42,7 @@ export const generateTokens = (id: string) => {
 };
 
 export const getTokenFromHeader = async (req: Request) => {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const token = req.headers['authorization']?.toString().split(' ')[1];
   if (!token) {
     return null;
   }
@@ -72,7 +72,7 @@ export const setCookie = (
     httpOnly: true,
     secure: true,
     sameSite: 'none',
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 7  * 24 * 60 * 60 * 1000 // 7 days
   });
 };
 

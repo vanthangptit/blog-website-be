@@ -21,8 +21,8 @@ export const userProfileCtrl = async (
     const user: IUserModel | null = await User.findById(id)
       .select({ password: 0 })
       .populate({
-      path: 'posts',
-    });
+        path: 'posts',
+      });
     if (!user)
       return next(appError('User not found', 404));
 

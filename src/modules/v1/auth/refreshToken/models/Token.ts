@@ -3,7 +3,7 @@ import { ITokenModel } from '../../../../../domain/interfaces';
 
 const TokenSchema = new Schema<ITokenModel>({
   refreshToken: {
-    type: String,
+    type: [String],
     trim: true,
   },
   /**

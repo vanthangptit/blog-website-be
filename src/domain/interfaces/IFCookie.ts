@@ -1,1 +1,1 @@
-export type NameCookies = 'authToken' | 'example';
+export type NameCookies = 'authToken';

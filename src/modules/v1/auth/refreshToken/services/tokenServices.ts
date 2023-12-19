@@ -5,7 +5,7 @@ import { Token } from '../models/Token';
  * */
 export const createRefreshToken = async (
   userId: string,
-  refreshToken: string,
+  refreshToken: string[],
   userAgent: string,
   ip: string,
   session: any

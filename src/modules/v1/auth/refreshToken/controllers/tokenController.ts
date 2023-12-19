@@ -25,7 +25,7 @@ export const getTokenCtrl = async (
 ) => {
   const cookies = req.cookies;
 
-  if (!cookies?.jwt)
+  if (!cookies?.authToken)
     return next(
       appError(
       'Access Denied. No token provided or invalid refresh token',
@@ -33,53 +33,61 @@ export const getTokenCtrl = async (
       )
     );
 
-  const refreshToken = cookies.jwt;
+  const refreshToken = cookies.authToken;
   clearCookie(res, AUTH_COOKIE_NAME);
 
   try {
-    const userTokenFound = await Token.findOne({ refreshToken }).exec();
+    const userTokenFound = await Token.findOne({ refreshToken });
+
     if (!userTokenFound) {
-      const decodedUser: IFPayloadToken | undefined
+      const decoded: IFPayloadToken | undefined
         = await verifyToken(refreshToken, conf.refreshAccessTokenKey);
-      if (!decodedUser)
+      if (!decoded)
         return next(appError('Forbidden. Please login again!', 403));
 
       // Delete refresh tokens of hacked user
-      await Token.findOneAndUpdate({ user: decodedUser.id }, {
-        refreshToken: null
-      }, {
-        new: true
-      }).exec();
+      const foundToken = await Token.findOne({ user: decoded.id.toString() });
+
+      if (foundToken) {
+        /**
+         * @todo: Handle block hacker
+         */
+        foundToken.refreshToken = [];
+        await foundToken.save();
+      }
 
       return next(appError('Forbidden. Please login again!', 403));
     }
 
     const decodedUser: IFPayloadToken | undefined = await verifyToken(
-      userTokenFound.refreshToken,
+      refreshToken,
       conf.refreshAccessTokenKey
     );
+    const newRefreshTokenArray = userTokenFound.refreshToken.filter(rt => rt !== refreshToken);
 
     // If expired token or invalid token
-    if (!decodedUser || decodedUser.id.toString() !== userTokenFound.user.toString())
+    if (!decodedUser || decodedUser.id.toString() !== userTokenFound.user.toString()) {
+      userTokenFound.refreshToken = [...newRefreshTokenArray];
+      const result = await userTokenFound.save();
       return next(
         appError('Forbidden. Please login again!', 403)
       );
+    }
 
     const {
       accessToken,
       refreshToken: newRefreshToken
     } = generateTokens(userTokenFound.user.toString());
 
-    userTokenFound.refreshToken = newRefreshToken;
+    // Saving refreshToken with current user
+    userTokenFound.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     await userTokenFound.save();
 
     setCookie(res, AUTH_COOKIE_NAME, newRefreshToken);
     return res.json({
       statusCode: 200,
       message: 'Get access token successful',
-      data: {
-        accessToken,
-      },
+      accessToken,
     });
   } catch (e: any) {
     return next(appError(e.message));

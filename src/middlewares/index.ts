@@ -92,6 +92,7 @@ export const globalErrHandler = (
     stack,
     message,
     status,
+    statusCode
   });
 };
 
