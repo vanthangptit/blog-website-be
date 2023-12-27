@@ -19,12 +19,20 @@ const categoryRouter = express.Router();
 /**
  * @method GET::Fetch categories
  */
-categoryRouter.get('/', fetchCategoriesCtrl);
+categoryRouter.get(
+  '/',
+  isAuthenticated,
+  fetchCategoriesCtrl
+);
 
 /**
  * @method GET::Get category detail
  */
-categoryRouter.get('/:id', categoryDetailCtrl);
+categoryRouter.get(
+  '/:id',
+  isAuthenticated,
+  categoryDetailCtrl
+);
 
 /**
  * @method POST::Create category

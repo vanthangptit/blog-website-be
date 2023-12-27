@@ -13,4 +13,13 @@ export const categoryValidation = () => checkSchema({
       errorMessage: 'The title must be a string.',
     }
   },
+  image: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The image is required',
+    },
+    isString: {
+      errorMessage: 'The image must be a string.',
+    }
+  },
 });

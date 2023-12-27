@@ -84,9 +84,13 @@ export const globalErrHandler = (
   next: NextFunction
 ) => {
   const stack = err.stack;
-  const message = err.message;
+  let message = err.message;
   const status = err.status ? err.status : 'failed';
   const statusCode = err.statusCode ? err.statusCode : 500;
+
+  if (statusCode === 500) {
+    message = 'Internal Server Error';
+  }
 
   return res.status(statusCode).json({
     stack,

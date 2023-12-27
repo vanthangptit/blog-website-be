@@ -13,7 +13,11 @@ export const fetchCategoriesCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const categories = await Category.find({});
+    const user = await User.findById(req.body.userAuth.id);
+    if (!user)
+      return next(appError('Access denied.', 403));
+
+    const categories = await Category.find({ user: req.body.userAuth.id }).select({ user: 0 });
     return res.json({
       statusCode: 200,
       message: 'Get all the category successfully',
@@ -33,10 +37,9 @@ export const categoryDetailCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const category = await Category.findById(req.params.id);
-    if (!category) {
-      return next(appError('The category was not found.'))
-    }
+    const category = await Category.findById(req.params.id).select({ user: 0 });
+    if (!category)
+      return next(appError('The category was not found.'));
 
     return res.json({
       statusCode: 200,
@@ -56,7 +59,7 @@ export const categoryCreateCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { title } = req.body;
+  const { title, image } = req.body;
 
   try {
     const user = await User.findById(req.body.userAuth.id);
@@ -66,13 +69,18 @@ export const categoryCreateCtrl = async (
 
     const category = await Category.create({
       title,
+      image,
       user: req.body.userAuth.id,
     });
 
     return res.json({
       statusCode: 200,
       message: 'Category created',
-      data: category,
+      data: {
+        title,
+        image,
+        _id: category._id
+      },
     });
   } catch (e: any) {
     return next(appError(e.message));
@@ -139,7 +147,7 @@ export const categoryDeleteCtrl = async (
       return next(appError('The category was not found.', 401));
     }
     if (user._id.toString() !== category.user.toString()) {
-      return next(appError('Access denied. You can not delete this category.', 401))
+      return next(appError('Access denied. You can not delete this category.', 403))
     }
 
     await Category.findByIdAndDelete(req.params.id);

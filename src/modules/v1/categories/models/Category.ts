@@ -11,6 +11,10 @@ const CategorySchema = new Schema<ICategoryModel>({
     type: String,
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
 }, { timestamps: true });
 
 // Compile the category model
