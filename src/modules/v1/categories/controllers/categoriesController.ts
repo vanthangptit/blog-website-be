@@ -140,11 +140,11 @@ export const categoryDeleteCtrl = async (
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user) {
-      return next(appError('User not exists', 401));
+      return next(appError('User not exists', 404));
     }
     const category = await Category.findById(req.params.id);
     if (!category) {
-      return next(appError('The category was not found.', 401));
+      return next(appError('The category was not found.', 404));
     }
     if (user._id.toString() !== category.user.toString()) {
       return next(appError('Access denied. You can not delete this category.', 403))
