@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { appError } from '../../../../utils';
 import { Post } from '../models/Post';
 import { User } from '../../users/models/User';
+import { getPostByIdOrShortUrl } from '../services/postServices';
 
 /**
  * Get posts
@@ -107,7 +108,7 @@ export const getPostByIdCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await getPostByIdOrShortUrl(req.params.idOrShortUrl);
     if (!post) return next(appError('The post not found', 404));
     if (
       post.user.toString() !== req.body.userAuth.id.toString() &&
@@ -141,10 +142,9 @@ export const createPostCtrl = async (
     description,
     imageUrl,
     shortUrl,
-    postType,
     writer,
     isPublished,
-    category,
+    categoryId,
   } = req.body;
 
   try {
@@ -166,11 +166,10 @@ export const createPostCtrl = async (
       description,
       imageUrl,
       shortUrl,
-      postType,
       writer,
       isPublished,
       user: author._id,
-      category,
+      category: categoryId,
     });
 
     // 3. Associate user to a post - Push the post into the user posts field
@@ -198,28 +197,28 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
     description,
     imageUrl,
     shortUrl,
-    postType,
     isPublished,
     writer,
   } = req.body;
+  const idOrShortUrl = req.params.idOrShortUrl;
 
   try {
-    const post = await Post.findById(req.params.id);
-
+    const post = await getPostByIdOrShortUrl(idOrShortUrl);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to update this post', 403));
 
-    await Post.findByIdAndUpdate(req.params.id, {
+    await Post.findOneAndUpdate({
+      $or:[ { id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
+    }, {
       title,
       excerpt,
       description,
       imageUrl,
       shortUrl,
-      postType,
       isPublished,
       writer,
-    });
+    }, { new: true });
 
     return res.json({
       statusCode: 200,
@@ -234,14 +233,17 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
  * Delete post
  */
 export const deletePostCtrl = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const post = await Post.findById(req.params.id);
+  const idOrShortUrl = req.params.idOrShortUrl;
 
+  try {
+    const post = await getPostByIdOrShortUrl(idOrShortUrl);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to delete this post', 403));
 
-    await Post.findByIdAndDelete(req.params.id);
+    await Post.findOneAndDelete({
+      $or:[ { id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
+    });
     return res.json({
       statusCode: 200,
       message: 'Post deleted',

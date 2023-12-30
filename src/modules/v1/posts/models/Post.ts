@@ -7,9 +7,18 @@ const PostSchema = new Schema<IPostModel>({
     required: [true, 'Post title is required'],
     trim: true,
   },
+  writer: {
+    type: String,
+    required: [true, 'Post writer is required'],
+  },
   excerpt: {
     type: String,
     required: [true, 'Post excerpt is required'],
+  },
+  shortUrl: {
+    type: String,
+    required: [true, 'Post short url is required'],
+    unique: true
   },
   description: {
     type: String,
@@ -18,32 +27,6 @@ const PostSchema = new Schema<IPostModel>({
   imageUrl: {
     type: String,
     required: [true, 'Post image is required'],
-  },
-  shortUrl: {
-    type: String,
-    required: [true, 'Post short url is required'],
-    unique: true
-  },
-  postType: {
-    type: String,
-    enum: [
-      'society',
-      'sports',
-      'technology',
-      'traveling',
-      'history',
-      'learn',
-      'lovely',
-      'poem',
-      'review',
-      'life',
-      'diary',
-    ],
-    required:  [true, 'Post type is required'],
-  },
-  writer: {
-    type: String,
-    required: [true, 'Post writer is required'],
   },
   isPublished: {
     type: Boolean,

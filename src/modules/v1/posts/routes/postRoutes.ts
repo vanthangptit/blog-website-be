@@ -13,7 +13,8 @@ import {
   isValidationResult
 } from '../../../../middlewares';
 import {
-  createPostValidation
+  postValidation,
+  paramsPostValidation
 } from './validations/postValidation';
 
 const postRouter = express.Router();
@@ -42,10 +43,12 @@ postRouter.get(
 );
 
 /**
- * @method GET::Get post details
+ * @method GET::Get single post
  */
 postRouter.get(
-  '/:id',
+  '/:idOrShortUrl',
+  paramsPostValidation(),
+  isValidationResult,
   isAuthenticated,
   getPostByIdCtrl
 );
@@ -55,7 +58,7 @@ postRouter.get(
  */
 postRouter.post(
   '/',
-  createPostValidation(),
+  postValidation(true),
   isValidationResult,
   isAuthenticated,
   createPostCtrl
@@ -65,8 +68,8 @@ postRouter.post(
  * @method PUT::Updated post
  */
 postRouter.put(
-  '/:id',
-  createPostValidation(),
+  '/:idOrShortUrl',
+  postValidation(false),
   isValidationResult,
   isAuthenticated,
   updatePostCtrl
@@ -76,7 +79,9 @@ postRouter.put(
  * @method DELETE::Deleted post
  */
 postRouter.delete(
-  '/:id',
+  '/:idOrShortUrl',
+  paramsPostValidation(),
+  isValidationResult,
   isAuthenticated,
   deletePostCtrl
 );
