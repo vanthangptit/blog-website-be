@@ -33,7 +33,6 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     required: false,
   },
-
   isLoginGoogle: {
     type: Boolean,
     default: false,

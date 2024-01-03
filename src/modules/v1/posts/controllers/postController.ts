@@ -14,11 +14,13 @@ export const getAllPostCtrl = async (
   next: NextFunction
 ) => {
   try {
-    // Get all posts
     const posts = await Post.find({})
-      .populate('user')
+      .populate({
+        path: 'user',
+        select: { password: 0, emailVerified: 0, email: 0 }
+      })
       .populate('category');
-    // Check if the user is blocked by the post owner
+
     const filteredPosts = posts.filter(post => {
       const blockedUsers = post?.user?.blocked || [];
       if (typeof blockedUsers !== 'boolean') {
@@ -242,8 +244,9 @@ export const deletePostCtrl = async (req: Request, res: Response, next: NextFunc
       return next(appError('You are not allowed to delete this post', 403));
 
     await Post.findOneAndDelete({
-      $or:[ { id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
+      $or:[ { id: idOrShortUrl }, { _id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
     });
+
     return res.json({
       statusCode: 200,
       message: 'Post deleted',
