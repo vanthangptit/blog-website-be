@@ -93,6 +93,11 @@ PostSchema.pre(/^find/, async function(next) {
     return this.disLikes.length;
   });
 
+  // Get commentsCount
+  PostSchema.virtual('commentsCount').get(function() {
+    return this.comments?.length || 0;
+  });
+
   PostSchema.virtual('daysAgo').get(function() {
     const post = this;
     const date: any = new Date(post.createdAt);

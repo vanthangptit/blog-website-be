@@ -3,7 +3,13 @@ import { NextFunction, Request, Response } from 'express';
 import { appError } from '../../../../utils';
 import { Post } from '../models/Post';
 import { User } from '../../users/models/User';
-import { getPostByIdOrShortUrl } from '../services/postServices';
+import {
+  getPostByShortUrl,
+  getPostById
+} from '../services/postServices';
+import {
+  getCategoryById
+} from '../../categories/services/categoryServices';
 
 /**
  * Get posts
@@ -14,12 +20,7 @@ export const getAllPostCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const posts = await Post.find({})
-      .populate({
-        path: 'user',
-        select: { password: 0, emailVerified: 0, email: 0 }
-      })
-      .populate('category');
+    const posts = await Post.find({ user: req.body.userAuth.id }).populate('category');
 
     const filteredPosts = posts.filter(post => {
       const blockedUsers = post?.user?.blocked || [];
@@ -48,7 +49,7 @@ export const toggleLikesCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await getPostById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() === req.body.userAuth.id.toString())
       return next(appError('You are author. You can not like this post.', 400));
@@ -80,7 +81,7 @@ export const toggleDisLikesCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await getPostById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() === req.body.userAuth.id.toString())
       return next(appError('You are author. You can not dislike this post.', 400));
@@ -104,25 +105,36 @@ export const toggleDisLikesCtrl = async (
 /**
  * Get post details
  */
-export const getPostByIdCtrl = async (
+export const getPostByShortUrlCtrl = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const post = await getPostByIdOrShortUrl(req.params.idOrShortUrl);
+    const post = await getPostByShortUrl(req.params.shortUrl);
     if (!post) return next(appError('The post not found', 404));
-    if (
-      post.user.toString() !== req.body.userAuth.id.toString() &&
-      post.numViews.includes(req.body.userAuth.id)
-    ) {
-      post.numViews.push(req.body.userAuth.id);
-      await post.save();
-    }
+    // if (
+    //   post.user.toString() !== req.body.userAuth.id.toString() &&
+    //   post.numViews.includes(req.body.userAuth.id)
+    // ) {
+    //   post.numViews.push(req.body.userAuth.id);
+    //   await post.save();
+    // }
+
+    const singlePost = await Post.findOne({
+      $or:[
+        { id: req.params.idOrShortUrl },
+        { shortUrl: req.params.idOrShortUrl }
+      ]
+    })
+      .populate({
+        path: 'user',
+        select: { password: 0, email: 0 }
+      });
 
     return res.json({
       statusCode: 200,
-      data: post,
+      data: singlePost,
       message: 'Get the post successfully',
     });
   } catch (e: any) {
@@ -150,18 +162,15 @@ export const createPostCtrl = async (
   } = req.body;
 
   try {
-    // 1. Find the user
     const author = await User.findById(req.body.userAuth.id);
 
     if (!author) return next(appError('Author not found.', 401));
     if (author.isBlocked) return next(appError('Access denied, account blocked', 403));
 
-    /**todo check category is exists
-     * if (!category) return next(appError('The category is invalid', 400));
-     * const isCategory = Category.findById(category)
-     */
+     const category = await getCategoryById(categoryId);
+     if (!category || category.user.toString() !== req.body.userAuth.id.toString())
+       return next(appError('The category id is invalid', 400));
 
-    // 2. Create the post
     const postCreated = await Post.create({
       title,
       excerpt,
@@ -174,9 +183,7 @@ export const createPostCtrl = async (
       category: categoryId,
     });
 
-    // 3. Associate user to a post - Push the post into the user posts field
     author.posts.push(postCreated);
-    // 4. Save
     await author.save();
 
     return res.json({
@@ -202,10 +209,10 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
     isPublished,
     writer,
   } = req.body;
-  const idOrShortUrl = req.params.idOrShortUrl;
+  const idOrShortUrl = req.params.shortUrl;
 
   try {
-    const post = await getPostByIdOrShortUrl(idOrShortUrl);
+    const post = await getPostByShortUrl(idOrShortUrl);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to update this post', 403));
@@ -235,17 +242,18 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
  * Delete post
  */
 export const deletePostCtrl = async (req: Request, res: Response, next: NextFunction) => {
-  const idOrShortUrl = req.params.idOrShortUrl;
+  const postId = req.params.id;
 
   try {
-    const post = await getPostByIdOrShortUrl(idOrShortUrl);
+    /**
+     * @todo: double check again
+     */
+    const post = await getPostById(postId);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to delete this post', 403));
 
-    await Post.findOneAndDelete({
-      $or:[ { id: idOrShortUrl }, { _id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
-    });
+    await Post.findByIdAndDelete(postId);
 
     return res.json({
       statusCode: 200,

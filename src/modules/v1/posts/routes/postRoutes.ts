@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   getAllPostCtrl,
-  getPostByIdCtrl,
+  getPostByShortUrlCtrl,
   createPostCtrl,
   updatePostCtrl,
   deletePostCtrl,
@@ -43,15 +43,9 @@ postRouter.get(
 );
 
 /**
- * @method GET::Get single post
+ * @method GET::Get single post by short url
  */
-postRouter.get(
-  '/:idOrShortUrl',
-  paramsPostValidation(),
-  isValidationResult,
-  isAuthenticated,
-  getPostByIdCtrl
-);
+postRouter.get('/:shortUrl', getPostByShortUrlCtrl);
 
 /**
  * @method POST::Create post
@@ -68,7 +62,7 @@ postRouter.post(
  * @method PUT::Updated post
  */
 postRouter.put(
-  '/:idOrShortUrl',
+  '/:shortUrl',
   postValidation(false),
   isValidationResult,
   isAuthenticated,
@@ -79,7 +73,7 @@ postRouter.put(
  * @method DELETE::Deleted post
  */
 postRouter.delete(
-  '/:idOrShortUrl',
+  '/:id',
   paramsPostValidation(),
   isValidationResult,
   isAuthenticated,

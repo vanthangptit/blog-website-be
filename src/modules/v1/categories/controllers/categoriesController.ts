@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { appError } from '../../../../utils';
 import { Category } from '../models/Category';
 import { User } from '../../users/models/User';
+import { getCategoryById } from '../services/categoryServices';
 
 /**
  * Fetch categories
@@ -17,7 +18,11 @@ export const fetchCategoriesCtrl = async (
     if (!user)
       return next(appError('Access denied.', 403));
 
-    const categories = await Category.find({ user: req.body.userAuth.id }).select({ user: 0 });
+    const categories = await Category.find({ user: req.body.userAuth.id })
+      .populate({
+        path: 'user',
+        select: { password: 0, emailVerified: 0, email: 0 }
+      });
     return res.json({
       statusCode: 200,
       message: 'Get all the category successfully',
@@ -37,7 +42,7 @@ export const categoryDetailCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const category = await Category.findById(req.params.id).select({ user: 0 });
+    const category = await getCategoryById(req.params.id);
     if (!category)
       return next(appError('The category was not found.'));
 
@@ -101,7 +106,7 @@ export const categoryUpdateCtrl = async (
     if (!user)
       return next(appError('User not exists', 404));
 
-    const category = await Category.findById(req.params.id);
+    const category = await getCategoryById(req.params.id);
     if (!category)
       return next(appError('Category not exists', 404));
 
@@ -142,7 +147,7 @@ export const categoryDeleteCtrl = async (
     if (!user) {
       return next(appError('User not exists', 404));
     }
-    const category = await Category.findById(req.params.id);
+    const category = await getCategoryById(req.params.id);
     if (!category) {
       return next(appError('The category was not found.', 404));
     }

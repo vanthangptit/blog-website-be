@@ -14,6 +14,7 @@ export interface IUserModel extends Document {
   isLoginGoogle?: boolean
   isBlocked?: boolean
   isAdmin: boolean
+  description?: string
   emailVerified: boolean
   profilePhoto?: string
   gender?: Gender

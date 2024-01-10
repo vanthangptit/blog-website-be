@@ -1,10 +1,14 @@
 import { Post } from '../models/Post';
 import { IPostModel } from '../../../../domain/interfaces';
 
-export const getPostByIdOrShortUrl = async (idOrShortUrl: string): Promise<IPostModel | undefined> => {
-  const posts = await Post.find( {
-    $or:[ { _id: idOrShortUrl }, { id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
-  });
+export const getPostByShortUrl = async (shortUrl: string): Promise<IPostModel | undefined> => {
+  const post = await Post.findOne({ shortUrl });
 
-  return posts.length ? posts[0] : undefined;
+  return post ?? undefined;
+};
+
+export const getPostById = async (id: string): Promise<IPostModel | undefined> => {
+  const post = await Post.findById(id);
+
+  return post ?? undefined;
 };

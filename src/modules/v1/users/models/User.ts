@@ -24,6 +24,10 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     required: false,
   },
+  description: {
+    type: String,
+    required: false,
+  },
   gender: {
     type: String,
     enum: ['female', 'male', 'other'],
@@ -176,31 +180,49 @@ UserSchema.pre('findOne',async function(next) {
 */
 // Get fullName
 UserSchema.virtual('fullName').get(function() {
+  if (!this?.firstName || !this?.lastName) {
+    return;
+  }
   return `${this.firstName} ${this.lastName}`;
 });
 
 // Get viewers count
 UserSchema.virtual('viewerCounts').get(function() {
+  if (!this?.viewers) {
+    return;
+  }
   return this.viewers.length;
 });
 
 // Get followers count
 UserSchema.virtual('followerCounts').get(function() {
+  if (!this?.followers) {
+    return;
+  }
   return this.followers.length;
 });
 
 // Get following count
 UserSchema.virtual('followingCounts').get(function() {
+  if (!this?.following) {
+    return;
+  }
   return this.following.length;
 });
 
 // Get post count
 UserSchema.virtual('postCounts').get(function() {
+  if (!this?.posts) {
+    return;
+  }
   return this.posts.length;
 });
 
 // Get blocked count
 UserSchema.virtual('blockedCounts').get(function() {
+  if (!this?.blocked) {
+    return;
+  }
   return this.blocked.length;
 });
 
