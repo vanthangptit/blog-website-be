@@ -6,13 +6,19 @@ import {
 import {
   commentCreateCtrl,
   commentDeleteCtrl,
-  commentUpdateCtrl
+  commentUpdateCtrl,
+  getCommentsByPostId,
 } from '../controllers/commentController';
 import {
   commentValidation
 } from './validations/commentValidation';
 
 const commentRouter = express.Router();
+
+/**
+ * @method GET::Get comment by post id
+ */
+commentRouter.get('/:id', getCommentsByPostId);
 
 /**
  * @method POST::Create comment

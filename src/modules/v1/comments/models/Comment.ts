@@ -9,12 +9,19 @@ const CommentSchema = new Schema<ICommentModel>({
   },
   user: {
     type: Schema.Types.ObjectId,
+    ref: 'User',
     required: [true, 'User is required'],
   },
   description: {
     type: String,
     required: [true, 'Comment description is required'],
   },
+  likes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    }
+  ],
 }, { timestamps: true });
 
 // Compile the comment model
