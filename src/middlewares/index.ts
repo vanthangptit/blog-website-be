@@ -15,7 +15,27 @@ import { IFPayloadToken } from '../domain/interfaces';
 const { accessDomain, accessTokenKey } = conf;
 
 /**
- * Validation login user
+ * Get user
+ */
+export const isGetUserAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = await getTokenFromHeader(req);
+  if (!token)
+    return next();
+
+  const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
+  if (!decodedUser)
+    return next();
+
+  req.body.userAuth = decodedUser;
+  next();
+};
+
+/**
+ * Validation user
  */
 export const isAuthenticated = async (
   req: Request,

@@ -10,6 +10,7 @@ import {
 } from '../controllers/postController';
 import {
   isAuthenticated,
+  isGetUserAuth,
   isValidationResult
 } from '../../../../middlewares';
 import {
@@ -37,7 +38,7 @@ postRouter.get(
  * @method GET::Dislikes
  */
 postRouter.get(
-  '/dislikes/:id',
+  '/dislikes/:shortUrl',
   isAuthenticated,
   toggleDisLikesCtrl
 );
@@ -45,7 +46,11 @@ postRouter.get(
 /**
  * @method GET::Get single post by short url
  */
-postRouter.get('/:shortUrl', getPostByShortUrlCtrl);
+postRouter.get(
+  '/:shortUrl',
+  isGetUserAuth,
+  getPostByShortUrlCtrl
+);
 
 /**
  * @method POST::Create post

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-
+import { startSession } from 'mongoose';
 import { appError } from '../../../../utils';
 import { Post } from '../models/Post';
 import { User } from '../../users/models/User';
@@ -81,8 +81,9 @@ export const toggleDisLikesCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const post = await getPostById(req.params.id);
-    if (!post) return next(appError('The post not found', 404));
+    const post = await getPostByShortUrl(req.params.shortUrl);
+    if (!post)
+      return next(appError('The post not found', 400));
     if (post.user.toString() === req.body.userAuth.id.toString())
       return next(appError('You are author. You can not dislike this post.', 400));
 
@@ -110,34 +111,42 @@ export const getPostByShortUrlCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
+  const session = await startSession();
+  session.startTransaction();
+  const userAuth = req.body.userAuth;
+
   try {
     const post = await getPostByShortUrl(req.params.shortUrl);
     if (!post) return next(appError('The post not found', 404));
-    // if (
-    //   post.user.toString() !== req.body.userAuth.id.toString() &&
-    //   post.numViews.includes(req.body.userAuth.id)
-    // ) {
-    //   post.numViews.push(req.body.userAuth.id);
-    //   await post.save();
-    // }
 
-    const singlePost = await Post.findOne({
-      $or:[
-        { id: req.params.idOrShortUrl },
-        { shortUrl: req.params.idOrShortUrl }
-      ]
+    if (userAuth) {
+      if (
+        post.user.toString() !== userAuth.id.toString() &&
+        !post.numViews.includes(userAuth.id)
+      ) {
+        post.numViews.push(userAuth.id);
+        await post.save();
+      }
+    }
+
+    const singlePost: any = await Post.findOne({
+      shortUrl: req.params.shortUrl
     })
       .populate({
         path: 'user',
         select: { password: 0, email: 0 }
       });
 
+    await session.commitTransaction();
+    await session.endSession();
     return res.json({
       statusCode: 200,
       data: singlePost,
       message: 'Get the post successfully',
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };

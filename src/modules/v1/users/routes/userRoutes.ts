@@ -9,6 +9,7 @@ import {
   unblockUserCtrl,
   updatePasswordUserCtrl,
   checkExistsUserController,
+  userGetAllCtrl
 } from '../controllers/userController';
 import {
   isAuthenticated,
@@ -20,6 +21,11 @@ import {
 } from './validations/userValidation';
 
 const userRouter = express.Router();
+
+/**
+ * @method Get::All users
+ */
+userRouter.get('/', userGetAllCtrl);
 
 /**
  * @method Get::Profile viewers
