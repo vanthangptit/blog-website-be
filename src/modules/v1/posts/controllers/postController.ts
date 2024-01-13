@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { startSession } from 'mongoose';
-import { appError } from '../../../../utils';
+import { appError, verifyToken } from '../../../../utils';
 import { Post } from '../models/Post';
 import { User } from '../../users/models/User';
 import {
@@ -10,6 +10,9 @@ import {
 import {
   getCategoryById
 } from '../../categories/services/categoryServices';
+import { Token } from '../../auth/refreshToken/models/Token';
+import { IFPayloadToken } from '../../../../domain/interfaces';
+import conf from '../../../../config';
 
 /**
  * Get posts
@@ -19,21 +22,90 @@ export const getAllPostCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const posts = await Post.find({ user: req.body.userAuth.id }).populate('category');
+  const cookies = req.cookies;
+  let filteredPosts;
 
-    const filteredPosts = posts.length > 0 ?posts.filter(post => {
-      const blockedUsers = post?.user?.blocked || [];
-      if (typeof blockedUsers !== 'boolean') {
-        const isBlocked = blockedUsers.includes(req.body.userAuth.id);
-        return isBlocked ? null : post;
+  try {
+    const posts = await Post.find({})
+      .populate({
+        path: 'user',
+        select: { password: 0, email: 0, emailVerified: 0 }
+      });
+
+    if (req.body.userAuth) {
+      filteredPosts = posts.filter(post => {
+        const blockedUsers = post?.user?.blocked ?? [];
+        if (typeof blockedUsers !== 'boolean') {
+          const isBlocked = blockedUsers.includes(req.body.userAuth.id);
+          return isBlocked ? null : post;
+        }
+      });
+    } else if (cookies.authToken) {
+      const userTokenFound = await Token.findOne({ refreshToken: cookies.authToken });
+
+      if (!userTokenFound) {
+        const decoded: IFPayloadToken | undefined
+          = await verifyToken(cookies.authToken, conf.refreshAccessTokenKey);
+        if (decoded) {
+          const foundToken = await Token.findOne({ user: decoded.id.toString() });
+          if (foundToken) {
+            /**
+             * @todo: Handle block hacker
+             */
+            foundToken.refreshToken = [];
+            await foundToken.save();
+          }
+        }
+        return next(appError('You are not allowed to get the posts.', 403));
       }
-    }) : [];
+
+      const decodedUser: IFPayloadToken | undefined = await verifyToken(
+        cookies.authToken,
+        conf.refreshAccessTokenKey
+      );
+
+      if (decodedUser && decodedUser.id.toString() === userTokenFound.user.toString()) {
+        filteredPosts = posts.filter(post => {
+          const blockedUsers = post?.user?.blocked ? JSON.parse(JSON.stringify(post?.user?.blocked)) : [];
+          if (typeof blockedUsers !== 'boolean') {
+            const isBlocked = blockedUsers.includes(decodedUser.id);
+            return isBlocked ? null : post;
+          }
+        });
+      }
+    } else {
+      filteredPosts = posts;
+    }
 
     return res.json({
       statusCode: 200,
       message: 'Get all post successfully',
       data: filteredPosts,
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Get posts by user
+ */
+export const getPostByUserCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const author = await User.findById(req.body.userAuth.id);
+    if (!author) return next(appError('Author not found.', 400));
+    if (author.isBlocked) return next(appError('Access denied, your account blocked', 403));
+
+    const posts = await Post.find({ user: req.body.userAuth.id  }).populate('category');
+
+    return res.json({
+      statusCode: 200,
+      message: 'Get all post successfully',
+      data: posts,
     });
   } catch (e: any) {
     return next(appError(e.message));

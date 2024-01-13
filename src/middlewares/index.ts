@@ -142,7 +142,7 @@ export async function isValidationResult(
 ) {
   const errors: any = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).send(errors?.errors[0]?.msg);
+    return next(appError(errors?.errors[0]?.msg, 400));
   }
 
   next();

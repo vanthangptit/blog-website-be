@@ -74,13 +74,13 @@ export const postValidation = (isCreated: boolean) => {
       }
     }
   } else {
-    schema['idOrShortUrl'] = {
+    schema['shortUrl'] = {
       in: ['params'],
       notEmpty: {
-        errorMessage: 'The idOrShortUrl is required',
+        errorMessage: 'The shortUrl is required',
       },
       isString: {
-        errorMessage: 'The idOrShortUrl must be a string.',
+        errorMessage: 'The shortUrl must be a string.',
       }
     }
   }
@@ -89,13 +89,13 @@ export const postValidation = (isCreated: boolean) => {
 };
 
 export const paramsPostValidation = () => checkSchema({
-  idOrShortUrl: {
+  id: {
     in: ['params'],
     notEmpty: {
-      errorMessage: 'The idOrShortUrl is required',
+      errorMessage: 'The post id is required',
     },
     isString: {
-      errorMessage: 'The idOrShortUrl must be a string.',
+      errorMessage: 'The post id must be a string.',
     }
   }
 });

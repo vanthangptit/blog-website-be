@@ -7,6 +7,7 @@ import {
   deletePostCtrl,
   toggleLikesCtrl,
   toggleDisLikesCtrl,
+  getPostByUserCtrl
 } from '../controllers/postController';
 import {
   isAuthenticated,
@@ -23,7 +24,16 @@ const postRouter = express.Router();
 /**
  * @method GET::Get all post
  */
-postRouter.get('/', isAuthenticated, getAllPostCtrl);
+postRouter.get('/', isGetUserAuth, getAllPostCtrl);
+
+/**
+ * @method GET::Get posts by userId
+ */
+postRouter.get(
+  '/my-post',
+  isAuthenticated,
+  getPostByUserCtrl
+);
 
 /**
  * @method GET::Likes
