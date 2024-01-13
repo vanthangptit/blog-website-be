@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { startSession } from 'mongoose';
 
 import { Token } from '../models/Token';
-import { User } from '../../../users/models/User';
 import {
   appError,
   clearCookie,
@@ -10,7 +8,6 @@ import {
   setCookie,
   verifyToken
 } from '../../../../../utils';
-import { deleteRefreshToken } from '../services/tokenServices';
 
 import conf from '../../../../../config';
 import {
@@ -43,7 +40,7 @@ export const getTokenCtrl = async (
       const decoded: IFPayloadToken | undefined
         = await verifyToken(refreshToken, conf.refreshAccessTokenKey);
       if (!decoded)
-        return next(appError('Forbidden. Please login again!', 403));
+        return next(appError('Access Denied. Invalid token.', 401));
 
       // Delete refresh tokens of hacked user
       const foundToken = await Token.findOne({ user: decoded.id.toString() });
@@ -56,7 +53,7 @@ export const getTokenCtrl = async (
         await foundToken.save();
       }
 
-      return next(appError('Forbidden. Please login again!', 403));
+      return next(appError('Unauthorized. Please login again!', 401));
     }
 
     const decodedUser: IFPayloadToken | undefined = await verifyToken(
@@ -70,7 +67,7 @@ export const getTokenCtrl = async (
       userTokenFound.refreshToken = [...newRefreshTokenArray];
       const result = await userTokenFound.save();
       return next(
-        appError('Forbidden. Please login again!', 403)
+        appError('Access Denied. Invalid token.', 401)
       );
     }
 

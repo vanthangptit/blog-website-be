@@ -51,7 +51,7 @@ export const isAuthenticated = async (
   const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
-      appError('Forbidden. Please login again!', 403)
+      appError('Access Denied. The token is invalid.', 401)
     );
 
   req.body.userAuth = decodedUser;
@@ -79,13 +79,13 @@ export const isAuthenticatedWithAdmin = async (
   const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
     return next(
-      appError('Forbidden. Please login again!', 403)
+      appError('Access Denied. The token is invalid.', 401)
     );
 
   const user = await User.findById(decodedUser.id);
   if (!user) {
     return next(
-      appError('isAuthenticatedWithAdmin:: User not found', 404)
+      appError('isAuthenticatedWithAdmin:: User not found', 400)
     );
   }
 

@@ -20,7 +20,7 @@ export const logoutCtrl = async (
     const userFound = await User.findById(userId);
 
     if (!userTokenFound || !userFound)
-      return next(appError('Access Denied. Invalid refresh token', 401));
+      return next(appError('Access Denied. Invalid refresh token', 404));
 
     await deleteRefreshToken(userId, session);
     await session.commitTransaction();

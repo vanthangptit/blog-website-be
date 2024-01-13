@@ -22,13 +22,13 @@ export const getAllPostCtrl = async (
   try {
     const posts = await Post.find({ user: req.body.userAuth.id }).populate('category');
 
-    const filteredPosts = posts.filter(post => {
+    const filteredPosts = posts.length > 0 ?posts.filter(post => {
       const blockedUsers = post?.user?.blocked || [];
       if (typeof blockedUsers !== 'boolean') {
         const isBlocked = blockedUsers.includes(req.body.userAuth.id);
         return isBlocked ? null : post;
       }
-    });
+    }) : [];
 
     return res.json({
       statusCode: 200,
@@ -83,9 +83,9 @@ export const toggleDisLikesCtrl = async (
   try {
     const post = await getPostByShortUrl(req.params.shortUrl);
     if (!post)
-      return next(appError('The post not found', 400));
+      return next(appError('The post not found', 404));
     if (post.user.toString() === req.body.userAuth.id.toString())
-      return next(appError('You are author. You can not dislike this post.', 400));
+      return next(appError('You are author. You can not dislike this post.', 403));
 
     if(post.disLikes.includes(req.body.userAuth.id)) {
       post.disLikes = post.disLikes.filter(unlike => unlike.toString() !== req.body.userAuth.id.toString());
@@ -173,12 +173,12 @@ export const createPostCtrl = async (
   try {
     const author = await User.findById(req.body.userAuth.id);
 
-    if (!author) return next(appError('Author not found.', 401));
+    if (!author) return next(appError('Author not found.', 400));
     if (author.isBlocked) return next(appError('Access denied, account blocked', 403));
 
      const category = await getCategoryById(categoryId);
      if (!category || category.user.toString() !== req.body.userAuth.id.toString())
-       return next(appError('The category id is invalid', 400));
+       return next(appError('The category id is invalid', 403));
 
     const postCreated = await Post.create({
       title,

@@ -96,7 +96,7 @@ export const userDeleteCtrl = async (
   try {
     const userToDelete = await User.findById(req.body.userAuth.id);
     if (!userToDelete)
-      return next(appError('User is not exists', 401));
+      return next(appError('User is not exists', 400));
 
     await Post.deleteMany({ user: req.body.userAuth.id });
     await Comment.deleteMany({ user: req.body.userAuth.id });

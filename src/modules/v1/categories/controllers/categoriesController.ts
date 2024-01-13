@@ -16,7 +16,7 @@ export const fetchCategoriesCtrl = async (
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user)
-      return next(appError('Access denied.', 403));
+      return next(appError('Use is not found', 400));
 
     const categories = await Category.find({ user: req.body.userAuth.id })
       .populate({
@@ -44,7 +44,7 @@ export const categoryDetailCtrl = async (
   try {
     const category = await getCategoryById(req.params.id);
     if (!category)
-      return next(appError('The category was not found.'));
+      return next(appError('The category was not found.', 404));
 
     return res.json({
       statusCode: 200,
@@ -69,7 +69,7 @@ export const categoryCreateCtrl = async (
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user) {
-      return next(appError('User not exists', 401));
+      return next(appError('User not exists', 400));
     }
 
     const category = await Category.create({
@@ -152,7 +152,7 @@ export const categoryDeleteCtrl = async (
       return next(appError('The category was not found.', 404));
     }
     if (user._id.toString() !== category.user.toString()) {
-      return next(appError('Access denied. You can not delete this category.', 403))
+      return next(appError('Forbidden. You can not delete this category.', 403))
     }
 
     await Category.findByIdAndDelete(req.params.id);

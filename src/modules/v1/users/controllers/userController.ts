@@ -80,7 +80,7 @@ export const whoViewMyProfileCtrl = async (
       viewer => viewer.toString() === userWhoViewed._id.toJSON()
     );
     if (isUserAlreadyViewed) {
-      return next(appError('You already viewed this profile', 401));
+      return next(appError('You already viewed this profile', 400));
     }
 
     //5. Push the user userWhoViewed to the user's viewers array
@@ -120,7 +120,7 @@ export const followingCtrl = async (
       follower => follower.toString() === userWhoFollowed._id.toJSON()
     );
     if (isUserAlreadyFollowed) {
-      return next(appError('You already followed this user', 401));
+      return next(appError('You already followed this user', 400));
     }
 
     //4. Push userWhoFollowed to the user's followers array
@@ -164,7 +164,7 @@ export const unfollowCtrl = async (
       follower => follower.toString() === userWhoUnFollowed._id.toJSON()
     );
     if (!isUserAlreadyFollowed) {
-      return next(appError('You have not followed this user', 401));
+      return next(appError('You have not followed this user', 400));
     }
 
     //5. Remove userWhoUnFollowed to the user's followers array
@@ -211,7 +211,7 @@ export const blockUserCtrl = async (
       blocker => blocker.toString() === userToBeBlocked._id.toJSON()
     );
     if (isUserAlreadyBlocked) {
-      return next(appError('You already blocked this profile', 401));
+      return next(appError('You already blocked this profile', 400));
     }
 
     //5. Push the user userToBeBlocked to the user's blocked array
@@ -252,7 +252,7 @@ export const unblockUserCtrl = async (
       blocker => blocker.toString() === userToBeUnBlocked._id.toJSON()
     );
     if (isUserAlreadyBlocked) {
-      return next(appError('You already unblocked this user', 401));
+      return next(appError('You already unblocked this user', 400));
     }
 
     //5. Push the user userToBeBlocked to the user's blocked array
@@ -329,15 +329,15 @@ export const updatePasswordUserCtrl = async (
   const { password, passwordConfirm } = req.body;
 
   if (!password || !passwordConfirm)
-    return next(appError('Please provide password or passwordConfirm fields', 401));
+    return next(appError('Please provide password or passwordConfirm fields', 400));
 
   if (password !== passwordConfirm)
-    return next(appError('Password and confirm password does not match', 401));
+    return next(appError('Password and confirm password does not match', 400));
 
   try {
     const user = await User.findById(req.body.userAuth.id);
     if (!user)
-      return next(appError('User is not exists', 401));
+      return next(appError('User is not exists', 404));
 
     await User.findByIdAndUpdate(
       user._id,
