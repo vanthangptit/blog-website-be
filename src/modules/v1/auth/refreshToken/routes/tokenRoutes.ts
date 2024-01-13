@@ -1,7 +1,5 @@
 import express from 'express';
-import { getTokenCtrl, deleteTokenCtrl } from '../controllers/tokenController';
-import { tokenValidation } from './validations/tokenValidation';
-import {isValidationResult} from '../../../../../middlewares';
+import { getTokenCtrl } from '../controllers/tokenController';
 
 const tokenRouter = express.Router();
 
@@ -9,15 +7,5 @@ const tokenRouter = express.Router();
  * @method POST::Get new access token
  */
 tokenRouter.get('/', getTokenCtrl);
-
-/**
- * @method DELETE::Delete token
- */
-tokenRouter.delete(
-  '/',
-  tokenValidation(),
-  isValidationResult,
-  deleteTokenCtrl
-);
 
 export default tokenRouter;

@@ -1,9 +1,9 @@
 import { checkSchema } from 'express-validator';
 
 /**
- * Get new access token based on header
+ * Validation login based on header
  */
-export const tokenValidation = () => checkSchema({
+export const logoutValidation = () => checkSchema({
   refreshToken: {
     in: ['body'],
     notEmpty: {
