@@ -153,7 +153,7 @@ export const toggleDisLikesCtrl = async (
   next: NextFunction
 ) => {
   try {
-    const post = await getPostByShortUrl(req.params.shortUrl);
+    const post = await getPostById(req.params.id);
     if (!post)
       return next(appError('The post not found', 404));
     if (post.user.toString() === req.body.userAuth.id.toString())

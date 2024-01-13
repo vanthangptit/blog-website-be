@@ -38,7 +38,7 @@ postRouter.get(
 /**
  * @method GET::Likes
  */
-postRouter.get(
+postRouter.post(
   '/likes/:id',
   isAuthenticated,
   toggleLikesCtrl
@@ -47,8 +47,8 @@ postRouter.get(
 /**
  * @method GET::Dislikes
  */
-postRouter.get(
-  '/dislikes/:shortUrl',
+postRouter.post(
+  '/dislikes/:id',
   isAuthenticated,
   toggleDisLikesCtrl
 );
