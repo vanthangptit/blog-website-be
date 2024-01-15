@@ -113,41 +113,59 @@ export const getPostByUserCtrl = async (
 };
 
 /**
- * Toggle likes
+ * Toggle Associates
  */
-export const toggleLikesCtrl = async (
+type AssociateText = 'likes'|'disLikes'|'hearts'|'stars';
+const associates: AssociateText[] = ['likes', 'disLikes', 'hearts', 'stars'];
+export const toggleAssociateCtrl = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const session = await startSession();
+  session.startTransaction();
+  const userId = req.body.userAuth.id;
+  const associate: AssociateText = req.body.associate;
+
   try {
     const post = await getPostById(req.params.id);
-    if (!post) return next(appError('The post not found', 404));
-    if (post.user.toString() === req.body.userAuth.id.toString())
+    if (!post) return next(appError('The post not found', 400));
+    if (post.user.toString() === userId.toString())
       return next(appError('You are author. You can not like this post.', 400));
 
-    const isLiked = post.likes.includes(req.body.userAuth.id);
-    if(isLiked) {
-      post.likes = post.likes.filter(like => like.toString() !== req.body.userAuth.id.toString());
+    const associateArrayFiltered = associates.filter(item => item !== associate);
+    associateArrayFiltered.forEach((text) => {
+      if (post[text].includes(userId)) {
+        post[text] = post[associate].filter(item => item.toString() !== userId.toString());
+      }
+    });
+
+    const isActivated = post[associate].includes(userId);
+    if(isActivated) {
+      post[associate] = post[associate].filter(item => item.toString() !== userId.toString());
     } else {
-      post.likes.push(req.body.userAuth.id);
+      post[associate].push(userId);
     }
 
     await post.save();
+    await session.commitTransaction();
+    await session.endSession();
     return res.json({
       statusCode: 200,
-      message: 'You have successfully liked the post',
+      message: `Successfully`,
       data: post,
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };
 
 /**
- * Toggle disDikes
+ * Toggle Saves
  */
-export const toggleDisLikesCtrl = async (
+export const toggleSavesCtrl = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -159,16 +177,17 @@ export const toggleDisLikesCtrl = async (
     if (post.user.toString() === req.body.userAuth.id.toString())
       return next(appError('You are author. You can not dislike this post.', 403));
 
-    if(post.disLikes.includes(req.body.userAuth.id)) {
-      post.disLikes = post.disLikes.filter(unlike => unlike.toString() !== req.body.userAuth.id.toString());
+    const isSaved = post.saves.includes(req.body.userAuth.id);
+    if (isSaved) {
+      post.saves = post.saves.filter(save => save.toString() !== req.body.userAuth.id.toString());
     } else {
-      post.disLikes.push(req.body.userAuth.id);
+      post.saves.push(req.body.userAuth.id);
     }
 
     await post.save();
     return res.json({
       statusCode: 200,
-      message: 'You have successfully dislike the post',
+      message: isSaved ? 'You saved successfully' : 'You unsaved successfully',
     });
   } catch (e: any) {
     return next(appError(e.message));
@@ -326,9 +345,6 @@ export const deletePostCtrl = async (req: Request, res: Response, next: NextFunc
   const postId = req.params.id;
 
   try {
-    /**
-     * @todo: double check again
-     */
     const post = await getPostById(postId);
     if (!post) return next(appError('The post not found', 404));
     if (post.user.toString() !== req.body.userAuth.id.toString())

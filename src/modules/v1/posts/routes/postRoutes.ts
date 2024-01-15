@@ -5,9 +5,9 @@ import {
   createPostCtrl,
   updatePostCtrl,
   deletePostCtrl,
-  toggleLikesCtrl,
-  toggleDisLikesCtrl,
-  getPostByUserCtrl
+  getPostByUserCtrl,
+  toggleAssociateCtrl,
+  toggleSavesCtrl
 } from '../controllers/postController';
 import {
   isAuthenticated,
@@ -16,10 +16,31 @@ import {
 } from '../../../../middlewares';
 import {
   postValidation,
-  paramsPostValidation
+  paramsPostValidation,
+  associateValidation
 } from './validations/postValidation';
 
 const postRouter = express.Router();
+
+/**
+ * @method POST::Saves
+ */
+postRouter.post(
+  '/saves/:id',
+  isAuthenticated,
+  toggleSavesCtrl
+);
+
+/**
+ * @method POST::Associates
+ */
+postRouter.post(
+  '/associates/:id',
+  associateValidation(),
+  isValidationResult,
+  isAuthenticated,
+  toggleAssociateCtrl
+);
 
 /**
  * @method GET::Get all post
@@ -33,24 +54,6 @@ postRouter.get(
   '/my-post',
   isAuthenticated,
   getPostByUserCtrl
-);
-
-/**
- * @method GET::Likes
- */
-postRouter.post(
-  '/likes/:id',
-  isAuthenticated,
-  toggleLikesCtrl
-);
-
-/**
- * @method GET::Dislikes
- */
-postRouter.post(
-  '/dislikes/:id',
-  isAuthenticated,
-  toggleDisLikesCtrl
 );
 
 /**

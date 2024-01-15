@@ -12,6 +12,9 @@ export interface IPostModel extends Document {
   category: Types.ObjectId
   comments: Types.ObjectId[]
   numViews: Types.ObjectId[]
+  hearts: Types.ObjectId[]
+  stars: Types.ObjectId[]
+  saves: Types.ObjectId[]
   likes: Types.ObjectId[]
   disLikes: Types.ObjectId[]
   user: IUserModel,

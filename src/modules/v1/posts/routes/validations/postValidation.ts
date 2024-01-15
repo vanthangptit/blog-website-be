@@ -99,3 +99,25 @@ export const paramsPostValidation = () => checkSchema({
     }
   }
 });
+
+export const associateValidation = () => checkSchema({
+  id: {
+    in: ['params'],
+    notEmpty: {
+      errorMessage: 'The post id is required',
+    },
+    isString: {
+      errorMessage: 'The post id must be a string.',
+    }
+  },
+  associate: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The post id is required',
+    },
+    matches: {
+      options: [/\b(?:likes|disLikes|hearts|stars)\b/],
+      errorMessage: "Invalid role"
+    }
+  }
+});

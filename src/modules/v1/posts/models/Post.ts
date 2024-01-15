@@ -50,6 +50,24 @@ const PostSchema = new Schema<IPostModel>({
       ref: 'User',
     }
   ],
+  hearts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    }
+  ],
+  stars: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    }
+  ],
+  saves: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    }
+  ],
   likes: [
     {
       type: Schema.Types.ObjectId,
