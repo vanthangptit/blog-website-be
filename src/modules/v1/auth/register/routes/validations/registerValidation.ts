@@ -9,6 +9,10 @@ export const registerValidation = () => checkSchema({
     notEmpty: {
       errorMessage: 'The firstName field is required',
     },
+    isLength: {
+      options: { min: 3, max: 25 },
+      errorMessage: 'The firstName must between 3 - 25 characters'
+    },
     matches: {
       options: /^[a-zA-Z!?&.\-\s]+$/,
       errorMessage: 'Please enter only letter characters.'
@@ -18,6 +22,10 @@ export const registerValidation = () => checkSchema({
     in: ['body'],
     notEmpty: {
       errorMessage: 'The lastName field is required',
+    },
+    isLength: {
+      options: { min: 3, max: 25 },
+      errorMessage: 'The lastName must between 3 - 25 characters'
     },
     matches: {
       options: /^[a-zA-Z!?&.\-\s]+$/,

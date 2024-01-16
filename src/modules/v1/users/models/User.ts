@@ -28,6 +28,14 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     required: false,
   },
+  address: {
+    type: String,
+    required: false,
+  },
+  job: {
+    type: String,
+    required: false,
+  },
   gender: {
     type: String,
     enum: ['female', 'male', 'other'],

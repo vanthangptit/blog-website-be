@@ -98,22 +98,37 @@ const PostSchema = new Schema<IPostModel>({
 PostSchema.pre(/^find/, async function(next) {
   // Get viewsCount
   PostSchema.virtual('viewsCount').get(function() {
-    return this.numViews.length;
+    return this?.numViews?.length || 0;
   });
 
   // Get likesCount
   PostSchema.virtual('likesCount').get(function() {
-    return this.likes.length;
+    return this?.likes?.length || 0;
   });
 
   // Get disLikesCount
   PostSchema.virtual('disLikesCount').get(function() {
-    return this.disLikes.length;
+    return this?.disLikes?.length || 0;
+  });
+
+  // Get commentsCount
+  PostSchema.virtual('heartsCount').get(function() {
+    return this?.hearts?.length || 0;
+  });
+
+  // Get likesCount
+  PostSchema.virtual('starsCount').get(function() {
+    return this?.stars?.length || 0;
+  });
+
+  // Get disLikesCount
+  PostSchema.virtual('savesCount').get(function() {
+    return this?.saves?.length || 0;
   });
 
   // Get commentsCount
   PostSchema.virtual('commentsCount').get(function() {
-    return this.comments?.length || 0;
+    return this?.comments?.length || 0;
   });
 
   PostSchema.virtual('daysAgo').get(function() {

@@ -15,6 +15,8 @@ export interface IUserModel extends Document {
   isBlocked?: boolean
   isAdmin: boolean
   description?: string
+  address?: string
+  job?: string
   emailVerified: boolean
   profilePhoto?: string
   gender?: Gender
