@@ -2,11 +2,13 @@ import { NextFunction, Request, Response } from 'express';
 
 import {
   passwordHash,
-  appError
+  appError,
+  comparePassword
 } from '../../../../utils';
 import { User } from '../models/User';
 import { IUserModel } from '../../../../domain/interfaces';
 import moment from 'moment';
+import { getUserById } from '../services/userServices';
 
 /**
  * Get users
@@ -19,7 +21,7 @@ export const userGetAllCtrl = async (
   try {
     const users = await User.find({});
     return res.json({
-      status: 200,
+      statusCode: 200,
       message: 'Get all user successfully',
       data: users,
     });
@@ -36,17 +38,22 @@ export const userProfileCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { id } = req.params;
   try {
-    const user: IUserModel | null = await User.findById(id)
-      .select({ password: 0 })
+    const user: IUserModel | null = await User.findById(req.body.userAuth.id)
+      // .select({ password: 0 })
       .populate({
         path: 'posts',
+      })
+      .populate({
+        path: 'comments',
       });
     if (!user)
       return next(appError('User not found', 404));
 
-    return res.status(200).json({
+    user.password = user?.password && user?.password?.length > 0 ? '********': undefined;
+
+    return res.json({
+      statusCode: 200,
       message: 'Get profile successfully',
       data: user,
     });
@@ -88,7 +95,8 @@ export const whoViewMyProfileCtrl = async (
     //6. Save the user
     await user.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'You have successfully viewed this profile',
     });
   } catch (e: any) {
@@ -132,7 +140,8 @@ export const followingCtrl = async (
     await userToFollow.save();
     await userWhoFollowed.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'You have successfully followed this user',
     });
   } catch (e: any) {
@@ -178,7 +187,8 @@ export const unfollowCtrl = async (
     );
     await userWhoUnFollowed.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'You have successfully unfollowed this user',
     });
   } catch (e: any) {
@@ -219,7 +229,8 @@ export const blockUserCtrl = async (
     //6. Save the user
     await userWhoBlocked.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'You have successfully blocked this profile',
     });
   } catch (e: any) {
@@ -262,7 +273,8 @@ export const unblockUserCtrl = async (
     //6. Save the user
     await userWhoUnBlocked.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'You have successfully unblocked this user',
     });
   } catch (e: any) {
@@ -278,7 +290,7 @@ export const userUpdateCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { firstName, lastName, profilePhoto, gender, birthDay } = req.body;
+  const { firstName, lastName, gender, birthDay, address, job, description } = req.body;
   try {
     const user = await User.findById(req.body.userAuth.id);
 
@@ -293,14 +305,16 @@ export const userUpdateCtrl = async (
       return next(appError('Birthday can not before date now!', 400));
     }
 
-    const userUpdated = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       user._id,
       {
         firstName,
         lastName,
-        profilePhoto,
         gender,
         birthDay,
+        address,
+        job,
+        description
       },
       {
         new: true,
@@ -310,8 +324,39 @@ export const userUpdateCtrl = async (
 
     return res.json({
       statusCode: 200,
-      data: userUpdated,
       message: 'User updated successful'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update profile photo
+ */
+export const updateProfilePhotoCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { profilePhoto } = req.body;
+  const userId = req.body.userAuth.id;
+
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        profilePhoto
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'The photo updated successfully'
     });
   } catch (e: any) {
     return next(appError(e.message));
@@ -326,23 +371,37 @@ export const updatePasswordUserCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { password, passwordConfirm } = req.body;
+  const { password, newPassword, newConfirmPassword } = req.body;
+  const userId = req.body.userAuth.id;
 
-  if (!password || !passwordConfirm)
-    return next(appError('Please provide password or passwordConfirm fields', 400));
-
-  if (password !== passwordConfirm)
-    return next(appError('Password and confirm password does not match', 400));
+  if (newPassword !== newConfirmPassword)
+    return next(appError('Your new passwords do no match', 400));
 
   try {
-    const user = await User.findById(req.body.userAuth.id);
+    const user = await getUserById(req.body.userAuth.id);
     if (!user)
       return next(appError('User is not exists', 404));
 
+    if (user.isLoginGoogle) {
+      if (user?.password) {
+        if (!password)
+          return next(appError('The password field is required', 400));
+        const isPasswordMatched = await comparePassword(password, user.password);
+        if (!isPasswordMatched)
+          return next(appError('The password is invalid.', 400));
+      }
+    } else {
+      if (!password)
+        return next(appError('The password field is required', 400));
+      const isPasswordMatched = await comparePassword(password, user.password ?? '');
+      if (!isPasswordMatched)
+        return next(appError('The password is invalid.', 400));
+    }
+
     await User.findByIdAndUpdate(
-      user._id,
+      userId,
       {
-        password: await passwordHash(password),
+        password: await passwordHash(newPassword),
       },
       {
         new: true,
@@ -358,6 +417,218 @@ export const updatePasswordUserCtrl = async (
     return next(appError(e.message));
   }
 };
+
+/**
+ * Update first name
+ */
+export const updateFirstNameCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { firstName } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { firstName },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'First name updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update last name
+ */
+export const updateLastNameCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { lastName } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { lastName },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'Last mame updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user address
+ */
+export const updateAddressCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { address } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { address },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User address updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user job
+ */
+export const updateJobCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { job } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { job },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User job updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user description
+ */
+export const updateDescriptionCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { description } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { description },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User description updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user gender
+ */
+export const updateGenderCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { gender } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { gender },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User gender updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user birthday
+ */
+export const updateBirthdayCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { birthDay } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    if (
+      birthDay &&
+      birthDay.length &&
+      moment(birthDay).isAfter(moment(new Date()))
+    ) {
+      return next(appError('Birthday can not before date now!', 400));
+    }
+
+    await User.findByIdAndUpdate(
+      userId,
+      { birthDay },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User birthday updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
 
 /**
  * Check exists user

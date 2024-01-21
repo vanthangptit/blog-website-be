@@ -49,7 +49,8 @@ export const adminBlockUserCtrl = async (
     //4. Save the user
     await userToBeUnBlocked.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'Admin have successfully blocked this user',
     });
   } catch (e: any) {
@@ -77,7 +78,8 @@ export const adminUnblockUserCtrl = async (
     //4. Save the user
     await userToBeUnBlocked.save();
 
-    return res.status(200).json({
+    return res.json({
+      statusCode: 200,
       message: 'Admin have successfully unblocked this user',
     });
   } catch (e: any) {

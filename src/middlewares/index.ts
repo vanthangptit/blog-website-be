@@ -54,6 +54,11 @@ export const isAuthenticated = async (
       appError('Access Denied. The token is invalid.', 401)
     );
 
+  const user = await User.findById(decodedUser.id);
+  if (!user) {
+    return next(appError('User not found', 400));
+  }
+
   req.body.userAuth = decodedUser;
   next();
 };

@@ -191,7 +191,7 @@ UserSchema.virtual('fullName').get(function() {
   if (!this?.firstName || !this?.lastName) {
     return;
   }
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.lastName} ${this.firstName}`;
 });
 
 // Get viewers count

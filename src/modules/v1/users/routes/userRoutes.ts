@@ -9,7 +9,15 @@ import {
   unblockUserCtrl,
   updatePasswordUserCtrl,
   checkExistsUserController,
-  userGetAllCtrl
+  userGetAllCtrl,
+  updateFirstNameCtrl,
+  updateLastNameCtrl,
+  updateAddressCtrl,
+  updateJobCtrl,
+  updateDescriptionCtrl,
+  updateGenderCtrl,
+  updateBirthdayCtrl,
+  updateProfilePhotoCtrl
 } from '../controllers/userController';
 import {
   isAuthenticated,
@@ -17,7 +25,15 @@ import {
 } from '../../../../middlewares';
 import {
   changePasswordValidation,
-  updateUserValidation
+  firstNameValidation,
+  lastNameValidation,
+  updateUserValidation,
+  addressValidation,
+  jobValidation,
+  descriptionValidation,
+  genderValidation,
+  birthdayValidation,
+  profilePhotoValidation
 } from './validations/userValidation';
 
 const userRouter = express.Router();
@@ -76,7 +92,7 @@ userRouter.get(
  * @method Get::Get profile user
  */
 userRouter.get(
-  '/profile/:id',
+  '/profile',
   isAuthenticated,
   userProfileCtrl
 );
@@ -93,10 +109,87 @@ userRouter.put(
 );
 
 /**
- * @method PUT::Updated password user
+ * @method PATCH::Updated first name
  */
-userRouter.put(
-  'update-password',
+userRouter.patch(
+  '/firstname',
+  firstNameValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateFirstNameCtrl
+);
+
+/**
+ * @method PATCH::Updated last name
+ */
+userRouter.patch(
+  '/lastname',
+  lastNameValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateLastNameCtrl
+);
+
+/**
+ * @method PATCH::Updated user address
+ */
+userRouter.patch(
+  '/address',
+  addressValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateAddressCtrl
+);
+
+/**
+ * @method PATCH::Updated user job
+ */
+userRouter.patch(
+  '/job',
+  jobValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateJobCtrl
+);
+
+/**
+ * @method PATCH::Updated user description
+ */
+userRouter.patch(
+  '/description',
+  descriptionValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateDescriptionCtrl
+);
+
+/**
+ * @method PATCH::Updated user gender
+ */
+userRouter.patch(
+  '/gender',
+  genderValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateGenderCtrl
+);
+
+/**
+ * @method PATCH::Updated user birthday
+ */
+userRouter.patch(
+  '/birthday',
+  birthdayValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateBirthdayCtrl
+);
+
+/**
+ * @method PATCH::Updated password user
+ */
+userRouter.patch(
+  '/passwords',
   changePasswordValidation(),
   isValidationResult,
   isAuthenticated,
@@ -104,10 +197,21 @@ userRouter.put(
 );
 
 /**
+ * @method PATCH::Updated profile photo
+ */
+userRouter.patch(
+  '/profilephoto',
+  profilePhotoValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateProfilePhotoCtrl
+);
+
+/**
  * @method Get::Check exists email
  */
 userRouter.get(
-  'check-exists/:email',
+  '/check-exists/:email',
   isAuthenticated,
   checkExistsUserController,
 );

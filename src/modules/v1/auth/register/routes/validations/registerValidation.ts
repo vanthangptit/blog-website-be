@@ -14,7 +14,7 @@ export const registerValidation = () => checkSchema({
       errorMessage: 'The firstName must between 3 - 25 characters'
     },
     matches: {
-      options: /^[a-zA-Z!?&.\-\s]+$/,
+      options: /^[a-zA-Z\-\s]+$/,
       errorMessage: 'Please enter only letter characters.'
     }
   },
@@ -28,7 +28,7 @@ export const registerValidation = () => checkSchema({
       errorMessage: 'The lastName must between 3 - 25 characters'
     },
     matches: {
-      options: /^[a-zA-Z!?&.\-\s]+$/,
+      options: /^[a-zA-Z\-\s]+$/,
       errorMessage: 'Please enter only letter characters'
     }
   },
