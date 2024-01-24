@@ -198,6 +198,48 @@ export const toggleSavesCtrl = async (
 };
 
 /**
+ * Toggle Saves
+ */
+export const togglePinCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const session = await startSession();
+  session.startTransaction();
+  try {
+    const post = await getPostById(req.params.id);
+    if (!post)
+      return next(appError('The post not found', 404));
+    if (post.creator.toString() !== req.body.userAuth.id.toString())
+      return next(appError('You are not author. You can not pin this post.', 403));
+
+    if (post.isPinned) {
+      post.isPinned = false;
+    } else {
+      await Post.updateMany({}, {
+        $set: { isPinned: false }
+      }, {
+        multi: true
+      });
+      post.isPinned = true;
+    }
+
+    await post.save();
+    await session.commitTransaction();
+    await session.endSession();
+    return res.json({
+      statusCode: 200,
+      message: post.isPinned ? 'You pinned successfully' : 'You unpinned successfully',
+    });
+  } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    return next(appError(e.message));
+  }
+};
+
+/**
  * Get post details
  */
 export const getPostByShortUrlCtrl = async (
@@ -290,7 +332,7 @@ export const createPostCtrl = async (
       shortUrl,
       writer,
       isPublished,
-      user: author._id,
+      creator: author._id,
       category: categoryId,
     });
 

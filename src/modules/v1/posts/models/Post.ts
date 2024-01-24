@@ -33,6 +33,11 @@ const PostSchema = new Schema<IPostModel>({
     required: false,
     default: false,
   },
+  isPinned: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   category: {
     type: Schema.Types.ObjectId,
     ref: 'Category',

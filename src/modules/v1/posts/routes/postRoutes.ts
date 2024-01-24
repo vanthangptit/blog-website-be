@@ -7,7 +7,8 @@ import {
   deletePostCtrl,
   getPostByUserCtrl,
   toggleAssociateCtrl,
-  toggleSavesCtrl
+  toggleSavesCtrl,
+  togglePinCtrl
 } from '../controllers/postController';
 import {
   isAuthenticated,
@@ -29,6 +30,15 @@ postRouter.post(
   '/saves/:id',
   isAuthenticated,
   toggleSavesCtrl
+);
+
+/**
+ * @method POST::Pinned
+ */
+postRouter.post(
+  '/pin/:id',
+  isAuthenticated,
+  togglePinCtrl
 );
 
 /**
