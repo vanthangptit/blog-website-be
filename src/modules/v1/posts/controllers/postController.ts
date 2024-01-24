@@ -17,6 +17,12 @@ import conf from '../../../../config';
 /**
  * Get posts
  */
+/**
+ * @todo: Maintain
+ * @param req
+ * @param res
+ * @param next
+ */
 export const getAllPostCtrl = async (
   req: Request,
   res: Response,
@@ -28,13 +34,13 @@ export const getAllPostCtrl = async (
   try {
     const posts = await Post.find({})
       .populate({
-        path: 'user',
+        path: 'creator',
         select: { password: 0, email: 0, emailVerified: 0 }
       });
 
     if (req.body.userAuth) {
       filteredPosts = posts.filter(post => {
-        const blockedUsers = post?.user?.blocked ?? [];
+        const blockedUsers = post?.creator?.blocked ?? [];
         if (typeof blockedUsers !== 'boolean') {
           const isBlocked = blockedUsers.includes(req.body.userAuth.id);
           return isBlocked ? null : post;
@@ -49,9 +55,6 @@ export const getAllPostCtrl = async (
         if (decoded) {
           const foundToken = await Token.findOne({ user: decoded.id.toString() });
           if (foundToken) {
-            /**
-             * @todo: Handle block hacker
-             */
             foundToken.refreshToken = [];
             await foundToken.save();
           }
@@ -66,7 +69,7 @@ export const getAllPostCtrl = async (
 
       if (decodedUser && decodedUser.id.toString() === userTokenFound.user.toString()) {
         filteredPosts = posts.filter(post => {
-          const blockedUsers = post?.user?.blocked ? JSON.parse(JSON.stringify(post?.user?.blocked)) : [];
+          const blockedUsers = post?.creator?.blocked ? JSON.parse(JSON.stringify(post?.creator?.blocked)) : [];
           if (typeof blockedUsers !== 'boolean') {
             const isBlocked = blockedUsers.includes(decodedUser.id);
             return isBlocked ? null : post;
@@ -130,7 +133,7 @@ export const toggleAssociateCtrl = async (
   try {
     const post = await getPostById(req.params.id);
     if (!post) return next(appError('The post not found', 400));
-    if (post.user.toString() === userId.toString())
+    if (post.creator.toString() === userId.toString())
       return next(appError('You are author. You can not like this post.', 400));
 
     const associateArrayFiltered = associates.filter(item => item !== associate);
@@ -174,7 +177,7 @@ export const toggleSavesCtrl = async (
     const post = await getPostById(req.params.id);
     if (!post)
       return next(appError('The post not found', 404));
-    if (post.user.toString() === req.body.userAuth.id.toString())
+    if (post.creator.toString() === req.body.userAuth.id.toString())
       return next(appError('You are author. You can not dislike this post.', 403));
 
     const isSaved = post.saves.includes(req.body.userAuth.id);
@@ -212,7 +215,7 @@ export const getPostByShortUrlCtrl = async (
 
     if (userAuth) {
       if (
-        post.user.toString() !== userAuth.id.toString() &&
+        post.creator.toString() !== userAuth.id.toString() &&
         !post.numViews.includes(userAuth.id)
       ) {
         post.numViews.push(userAuth.id);
@@ -220,19 +223,27 @@ export const getPostByShortUrlCtrl = async (
       }
     }
 
-    const singlePost: any = await Post.findOne({
+    const singlePost = await Post.findOne({
       shortUrl: req.params.shortUrl
     })
       .populate({
-        path: 'user',
+        path: 'creator',
         select: { password: 0, email: 0 }
       });
+    const postRelated = await Post.find({
+      shortUrl: { $ne: req.params.shortUrl }
+    })
+      .limit(5)
+      .sort({ createdAt: -1 });
 
     await session.commitTransaction();
     await session.endSession();
     return res.json({
       statusCode: 200,
-      data: singlePost,
+      data: {
+        singlePost,
+        postRelated,
+      },
       message: 'Get the post successfully',
     });
   } catch (e: any) {
@@ -314,7 +325,7 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
   try {
     const post = await getPostByShortUrl(idOrShortUrl);
     if (!post) return next(appError('The post not found', 404));
-    if (post.user.toString() !== req.body.userAuth.id.toString())
+    if (post.creator.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to update this post', 403));
 
     await Post.findOneAndUpdate({
@@ -347,7 +358,7 @@ export const deletePostCtrl = async (req: Request, res: Response, next: NextFunc
   try {
     const post = await getPostById(postId);
     if (!post) return next(appError('The post not found', 404));
-    if (post.user.toString() !== req.body.userAuth.id.toString())
+    if (post.creator.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to delete this post', 403));
 
     await Post.findByIdAndDelete(postId);

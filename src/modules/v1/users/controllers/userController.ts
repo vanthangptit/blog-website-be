@@ -9,26 +9,7 @@ import { User } from '../models/User';
 import { IUserModel } from '../../../../domain/interfaces';
 import moment from 'moment';
 import { getUserById } from '../services/userServices';
-
-/**
- * Get users
- */
-export const userGetAllCtrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const users = await User.find({});
-    return res.json({
-      statusCode: 200,
-      message: 'Get all user successfully',
-      data: users,
-    });
-  } catch (e: any) {
-    return next(appError(e.message));
-  }
-};
+import { startSession } from 'mongoose';
 
 /**
  * Get profile
@@ -112,39 +93,42 @@ export const followingCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    // 1. Find the user to follow
-    const userToFollow = await User.findById(req.params.id);
+  const session = await startSession();
+  session.startTransaction();
 
-    // 2. Find the user who is follow
+  try {
+    const userToFollow = await User.findById(req.params.id);
     const userWhoFollowed = await User.findById(req.body.userAuth.id);
 
     if (!userToFollow || !userWhoFollowed) {
       return next(appError('The user or profile can not found', 404));
     }
 
-    //3. Check if userWhoFollowed is already in the users followers array
-    const isUserAlreadyFollowed = userToFollow.following.find(
+    const isUserAlreadyFollowed = userToFollow.followers.find(
       follower => follower.toString() === userWhoFollowed._id.toJSON()
     );
+
     if (isUserAlreadyFollowed) {
       return next(appError('You already followed this user', 400));
     }
 
-    //4. Push userWhoFollowed to the user's followers array
+    // "Followers" are the users who follow you.
     userToFollow.followers.push(userWhoFollowed._id);
-    //5. Push userToFollow to the userWhoFollowed's following array
+    // “Following” is the term for the users who you follow.
     userWhoFollowed.following.push(userToFollow._id);
 
-    //6. Save the user
     await userToFollow.save();
     await userWhoFollowed.save();
 
+    await session.commitTransaction();
+    await session.endSession();
     return res.json({
       statusCode: 200,
       message: 'You have successfully followed this user',
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };
@@ -157,18 +141,16 @@ export const unfollowCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
+  const session = await startSession();
+  session.startTransaction();
   try {
-    // 1. Find the user to unfollow
     const userToBeUnfollowed = await User.findById(req.params.id);
-
-    // 2. Find the user who is unfollowing
     const userWhoUnFollowed = await User.findById(req.body.userAuth.id);
 
     if (!userToBeUnfollowed || !userWhoUnFollowed) {
       return next(appError('The follower or following can not found', 404));
     }
 
-    //4. Check if userWhoUnFollowed is already in the users followers array
     const isUserAlreadyFollowed = userToBeUnfollowed.followers.find(
       follower => follower.toString() === userWhoUnFollowed._id.toJSON()
     );
@@ -176,22 +158,24 @@ export const unfollowCtrl = async (
       return next(appError('You have not followed this user', 400));
     }
 
-    //5. Remove userWhoUnFollowed to the user's followers array
     userToBeUnfollowed.followers = userToBeUnfollowed.followers.filter(
       follower => follower.toString() !== userWhoUnFollowed._id.toJSON()
     );
     await userToBeUnfollowed.save();
-    //6. Remove userToBeUnfollowed from userWhoUnFollowed's following array
     userWhoUnFollowed.following = userWhoUnFollowed.following.filter(
       following => following.toString() !== userToBeUnfollowed._id.toJSON()
     );
     await userWhoUnFollowed.save();
 
+    await session.commitTransaction();
+    await session.endSession();
     return res.json({
       statusCode: 200,
       message: 'You have successfully unfollowed this user',
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };
@@ -276,55 +260,6 @@ export const unblockUserCtrl = async (
     return res.json({
       statusCode: 200,
       message: 'You have successfully unblocked this user',
-    });
-  } catch (e: any) {
-    return next(appError(e.message));
-  }
-};
-
-/**
- * Update user
- */
-export const userUpdateCtrl = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { firstName, lastName, gender, birthDay, address, job, description } = req.body;
-  try {
-    const user = await User.findById(req.body.userAuth.id);
-
-    if (!user)
-      return next(appError('User is not exists', 401));
-
-    if (
-      birthDay &&
-      birthDay.length &&
-      moment(birthDay).isAfter(moment(new Date()))
-    ) {
-      return next(appError('Birthday can not before date now!', 400));
-    }
-
-    await User.findByIdAndUpdate(
-      user._id,
-      {
-        firstName,
-        lastName,
-        gender,
-        birthDay,
-        address,
-        job,
-        description
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    return res.json({
-      statusCode: 200,
-      message: 'User updated successful'
     });
   } catch (e: any) {
     return next(appError(e.message));

@@ -3,7 +3,6 @@ import { rateLimit } from 'express-rate-limit';
 import { validationResult } from 'express-validator';
 import cors from 'cors';
 
-import { User } from '../modules/v1/users/models/User';
 import {
   appError,
   getTokenFromHeader,
@@ -11,6 +10,7 @@ import {
 } from '../utils';
 import conf from '../config';
 import { IFPayloadToken } from '../domain/interfaces';
+import { getUserById } from '../modules/v1/users/services/userServices';
 
 const { accessDomain, accessTokenKey } = conf;
 
@@ -28,6 +28,10 @@ export const isGetUserAuth = async (
 
   const decodedUser: IFPayloadToken | undefined = await verifyToken(token, accessTokenKey);
   if (!decodedUser)
+    return next();
+
+  const user = await getUserById(decodedUser.id);
+  if (!user)
     return next();
 
   req.body.userAuth = decodedUser;
@@ -54,7 +58,7 @@ export const isAuthenticated = async (
       appError('Access Denied. The token is invalid.', 401)
     );
 
-  const user = await User.findById(decodedUser.id);
+  const user = await getUserById(decodedUser.id);
   if (!user) {
     return next(appError('User not found', 400));
   }
@@ -87,7 +91,7 @@ export const isAuthenticatedWithAdmin = async (
       appError('Access Denied. The token is invalid.', 401)
     );
 
-  const user = await User.findById(decodedUser.id);
+  const user = await getUserById(decodedUser.id);
   if (!user) {
     return next(
       appError('isAuthenticatedWithAdmin:: User not found', 400)

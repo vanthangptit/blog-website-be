@@ -80,7 +80,7 @@ const PostSchema = new Schema<IPostModel>({
       ref: 'User',
     }
   ],
-  user: {
+  creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'Please author is required'],

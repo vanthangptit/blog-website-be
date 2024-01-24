@@ -46,9 +46,6 @@ export const getTokenCtrl = async (
       const foundToken = await Token.findOne({ user: decoded.id.toString() });
 
       if (foundToken) {
-        /**
-         * @todo: Handle block hacker
-         */
         foundToken.refreshToken = [];
         await foundToken.save();
       }

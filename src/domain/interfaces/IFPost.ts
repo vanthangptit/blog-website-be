@@ -17,7 +17,7 @@ export interface IPostModel extends Document {
   saves: Types.ObjectId[]
   likes: Types.ObjectId[]
   disLikes: Types.ObjectId[]
-  user: IUserModel,
+  creator: IUserModel,
   createdAt: number
   updatedAt: number
 }

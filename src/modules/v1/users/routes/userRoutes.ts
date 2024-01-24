@@ -1,7 +1,6 @@
 import express from 'express';
 import {
   userProfileCtrl,
-  userUpdateCtrl,
   whoViewMyProfileCtrl,
   followingCtrl,
   unfollowCtrl,
@@ -9,7 +8,6 @@ import {
   unblockUserCtrl,
   updatePasswordUserCtrl,
   checkExistsUserController,
-  userGetAllCtrl,
   updateFirstNameCtrl,
   updateLastNameCtrl,
   updateAddressCtrl,
@@ -27,7 +25,6 @@ import {
   changePasswordValidation,
   firstNameValidation,
   lastNameValidation,
-  updateUserValidation,
   addressValidation,
   jobValidation,
   descriptionValidation,
@@ -37,11 +34,6 @@ import {
 } from './validations/userValidation';
 
 const userRouter = express.Router();
-
-/**
- * @method Get::All users
- */
-userRouter.get('/', userGetAllCtrl);
 
 /**
  * @method Get::Profile viewers
@@ -55,7 +47,7 @@ userRouter.get(
 /**
  * @method Get::Following
  */
-userRouter.get(
+userRouter.post(
   '/following/:id',
   isAuthenticated,
   followingCtrl
@@ -64,7 +56,7 @@ userRouter.get(
 /**
  * @method Get::UnFollow
  */
-userRouter.get(
+userRouter.post(
   '/unfollower/:id',
   isAuthenticated,
   unfollowCtrl
@@ -95,17 +87,6 @@ userRouter.get(
   '/profile',
   isAuthenticated,
   userProfileCtrl
-);
-
-/**
- * @method PUT::Updated user
- */
-userRouter.put(
-  '/',
-  updateUserValidation(),
-  isValidationResult,
-  isAuthenticated,
-  userUpdateCtrl
 );
 
 /**
