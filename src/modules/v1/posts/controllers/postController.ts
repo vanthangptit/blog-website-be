@@ -214,16 +214,7 @@ export const togglePinCtrl = async (
     if (post.creator.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not author. You can not pin this post.', 403));
 
-    if (post.isPinned) {
-      post.isPinned = false;
-    } else {
-      await Post.updateMany({}, {
-        $set: { isPinned: false }
-      }, {
-        multi: true
-      });
-      post.isPinned = true;
-    }
+    post.isPinned = !post.isPinned;
 
     await post.save();
     await session.commitTransaction();
