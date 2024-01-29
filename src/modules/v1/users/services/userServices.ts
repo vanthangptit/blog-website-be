@@ -6,3 +6,8 @@ export const getUserById = async (id: string): Promise<IUserModel | undefined> =
   return user ?? undefined;
 };
 
+export const isCheckUserExists = async (alias: string): Promise<boolean> => {
+  const user = await User.findOne({ alias });
+  return !!user;
+};
+

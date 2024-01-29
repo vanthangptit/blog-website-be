@@ -127,8 +127,28 @@ export const jobValidation = () => checkSchema({
       errorMessage: 'Please enter letter characters, number and [@!?&.,-] special characters'
     },
     isLength: {
-      options: { min: 25, max: 500 },
+      options: { max: 255 },
       errorMessage: 'Job must not exceed 255 characters'
+    }
+  }
+});
+
+/**
+ * Validation user school
+ */
+export const schoolValidation = () => checkSchema({
+  school: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The school must be a string.'
+    },
+    matches: {
+      options: /^[a-zA-Z0-9\-\s]+$/,
+      errorMessage: 'Please enter letter characters and numbers.'
+    },
+    isLength: {
+      options: { max: 255 },
+      errorMessage: 'School must not exceed 255 characters'
     }
   }
 });
@@ -180,3 +200,24 @@ export const birthdayValidation = () => checkSchema({
     }
   }
 });
+
+/**
+ * Validation user alias
+ */
+export const aliasValidation = () => checkSchema({
+  alias: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The alias must be a string.'
+    },
+    matches: {
+      options: /^[a-zA-Z0-9\-\s]+$/,
+      errorMessage: 'Please enter letter characters and numbers.'
+    },
+    isLength: {
+      options: { max: 255 },
+      errorMessage: 'Alias must not exceed 255 characters'
+    }
+  }
+});
+

@@ -15,7 +15,9 @@ import {
   updateDescriptionCtrl,
   updateGenderCtrl,
   updateBirthdayCtrl,
-  updateProfilePhotoCtrl
+  updateProfilePhotoCtrl,
+  schoolCtrl,
+  aliasCtrl
 } from '../controllers/userController';
 import {
   isAuthenticated,
@@ -30,7 +32,9 @@ import {
   descriptionValidation,
   genderValidation,
   birthdayValidation,
-  profilePhotoValidation
+  profilePhotoValidation,
+  schoolValidation,
+  aliasValidation
 } from './validations/userValidation';
 
 const userRouter = express.Router();
@@ -131,6 +135,28 @@ userRouter.patch(
   isValidationResult,
   isAuthenticated,
   updateJobCtrl
+);
+
+/**
+ * @method PATCH::Updated user school
+ */
+userRouter.patch(
+  '/school',
+  schoolValidation(),
+  isValidationResult,
+  isAuthenticated,
+  schoolCtrl
+);
+
+/**
+ * @method PATCH::Updated user alias
+ */
+userRouter.patch(
+  '/alias',
+  aliasValidation(),
+  isValidationResult,
+  isAuthenticated,
+  aliasCtrl
 );
 
 /**

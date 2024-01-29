@@ -3,6 +3,11 @@ import { IUserModel } from '../../../../domain/interfaces';
 import { Post } from '../../posts/models/Post';
 
 const UserSchema = new Schema<IUserModel>({
+  alias: {
+    type: String,
+    required: [true, 'Alias is required'],
+    unique: true
+  },
   firstName: {
     type: String,
     required: [true, 'First Name is required'],
@@ -25,6 +30,10 @@ const UserSchema = new Schema<IUserModel>({
     required: false,
   },
   description: {
+    type: String,
+    required: false,
+  },
+  school: {
     type: String,
     required: false,
   },

@@ -8,7 +8,7 @@ import {
 import { User } from '../models/User';
 import { IUserModel } from '../../../../domain/interfaces';
 import moment from 'moment';
-import { getUserById } from '../services/userServices';
+import { getUserById, isCheckUserExists } from '../services/userServices';
 import { startSession } from 'mongoose';
 
 /**
@@ -463,6 +463,68 @@ export const updateJobCtrl = async (
     return res.json({
       statusCode: 200,
       message: 'User job updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user school
+ */
+export const schoolCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { school } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { school },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'User school updated successfully'
+    });
+  } catch (e: any) {
+    return next(appError(e.message));
+  }
+};
+
+/**
+ * Update user alias
+ */
+export const aliasCtrl = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { alias } = req.body;
+  const userId = req.body.userAuth.id;
+  try {
+    const aliasExists = await isCheckUserExists(alias);
+    if (aliasExists)
+      return next(appError('Alias is exists', 400));
+
+    await User.findByIdAndUpdate(
+      userId,
+      { alias },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return res.json({
+      statusCode: 200,
+      message: 'Alias updated successfully'
     });
   } catch (e: any) {
     return next(appError(e.message));

@@ -17,6 +17,8 @@ export interface IUserModel extends Document {
   description?: string
   address?: string
   job?: string
+  school?: string
+  alias?: string
   emailVerified: boolean
   profilePhoto?: string
   gender?: Gender
