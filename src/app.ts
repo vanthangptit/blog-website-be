@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 
-import userRouter from './modules/v1/users/routes/userRoutes';
+import userRouter from './modules/v1/users/userRoutes';
 import postRouter from './modules/v1/posts/routes/postRoutes';
 import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
 import commentRouter from './modules/v1/comments/routes/commentRoutes';

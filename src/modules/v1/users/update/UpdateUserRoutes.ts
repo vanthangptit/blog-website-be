@@ -1,102 +1,43 @@
 import express from 'express';
 import {
-  userProfileCtrl,
-  whoViewMyProfileCtrl,
-  followingCtrl,
-  unfollowCtrl,
-  blockUserCtrl,
-  unblockUserCtrl,
   updatePasswordUserCtrl,
-  checkExistsUserController,
   updateFirstNameCtrl,
   updateLastNameCtrl,
   updateAddressCtrl,
   updateJobCtrl,
-  updateDescriptionCtrl,
+  updateBioCtrl,
   updateGenderCtrl,
   updateBirthdayCtrl,
   updateProfilePhotoCtrl,
   schoolCtrl,
-  aliasCtrl
-} from '../controllers/userController';
-import {
-  isAuthenticated,
-  isValidationResult
-} from '../../../../middlewares';
+  aliasCtrl,
+  updateWebsiteUrlCtrl
+} from './UpdateUserController';
 import {
   changePasswordValidation,
   firstNameValidation,
   lastNameValidation,
   addressValidation,
   jobValidation,
-  descriptionValidation,
+  bioValidation,
   genderValidation,
   birthdayValidation,
   profilePhotoValidation,
   schoolValidation,
-  aliasValidation
-} from './validations/userValidation';
-
-const userRouter = express.Router();
-
-/**
- * @method Get::Profile viewers
- */
-userRouter.get(
-  '/profile-viewers/:id',
+  aliasValidation,
+  websiteUrlValidation
+} from './validations/updateUserValidation';
+import {
   isAuthenticated,
-  whoViewMyProfileCtrl
-);
+  isValidationResult
+} from '../../../../middlewares';
 
-/**
- * @method Get::Following
- */
-userRouter.post(
-  '/following/:id',
-  isAuthenticated,
-  followingCtrl
-);
-
-/**
- * @method Get::UnFollow
- */
-userRouter.post(
-  '/unfollower/:id',
-  isAuthenticated,
-  unfollowCtrl
-);
-
-/**
- * @method Get::Block user
- */
-userRouter.get(
-  '/block/:id',
-  isAuthenticated,
-  blockUserCtrl
-);
-
-/**
- * @method Get::unblock user
- */
-userRouter.get(
-  '/unblock/:id',
-  isAuthenticated,
-  unblockUserCtrl
-);
-
-/**
- * @method Get::Get profile user
- */
-userRouter.get(
-  '/profile',
-  isAuthenticated,
-  userProfileCtrl
-);
+const updateUserRouter = express.Router();
 
 /**
  * @method PATCH::Updated first name
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/firstname',
   firstNameValidation(),
   isValidationResult,
@@ -107,7 +48,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated last name
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/lastname',
   lastNameValidation(),
   isValidationResult,
@@ -118,7 +59,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated user address
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/address',
   addressValidation(),
   isValidationResult,
@@ -129,7 +70,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated user job
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/job',
   jobValidation(),
   isValidationResult,
@@ -140,7 +81,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated user school
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/school',
   schoolValidation(),
   isValidationResult,
@@ -151,7 +92,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated user alias
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/alias',
   aliasValidation(),
   isValidationResult,
@@ -160,20 +101,31 @@ userRouter.patch(
 );
 
 /**
- * @method PATCH::Updated user description
+ * @method PATCH::Updated user bio
  */
-userRouter.patch(
-  '/description',
-  descriptionValidation(),
+updateUserRouter.patch(
+  '/bio',
+  bioValidation(),
   isValidationResult,
   isAuthenticated,
-  updateDescriptionCtrl
+  updateBioCtrl
+);
+
+/**
+ * @method PATCH::Updated user websiteUrl
+ */
+updateUserRouter.patch(
+  '/websiteUrl',
+  websiteUrlValidation(),
+  isValidationResult,
+  isAuthenticated,
+  updateWebsiteUrlCtrl
 );
 
 /**
  * @method PATCH::Updated user gender
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/gender',
   genderValidation(),
   isValidationResult,
@@ -184,7 +136,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated user birthday
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/birthday',
   birthdayValidation(),
   isValidationResult,
@@ -195,7 +147,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated password user
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/passwords',
   changePasswordValidation(),
   isValidationResult,
@@ -206,7 +158,7 @@ userRouter.patch(
 /**
  * @method PATCH::Updated profile photo
  */
-userRouter.patch(
+updateUserRouter.patch(
   '/profilephoto',
   profilePhotoValidation(),
   isValidationResult,
@@ -214,13 +166,4 @@ userRouter.patch(
   updateProfilePhotoCtrl
 );
 
-/**
- * @method Get::Check exists email
- */
-userRouter.get(
-  '/check-exists/:email',
-  isAuthenticated,
-  checkExistsUserController,
-);
-
-export default userRouter;
+export default updateUserRouter;

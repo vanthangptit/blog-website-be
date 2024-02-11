@@ -1,5 +1,5 @@
-import { IUserModel } from '../../../../domain/interfaces';
-import { User } from '../models/User';
+import { IUserModel } from '../../../domain/interfaces';
+import { User } from './userModel';
 
 export const getUserById = async (id: string): Promise<IUserModel | undefined> => {
   const user = await User.findById(id);

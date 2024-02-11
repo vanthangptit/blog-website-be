@@ -6,7 +6,7 @@ import {
 import { Category } from '../../categories/models/Category';
 import { Post } from '../../posts/models/Post';
 import { Comment} from '../../comments/models/Comment';
-import { User } from '../../users/models/User';
+import { User } from '../../users/userModel';
 
 /**
  * Get users

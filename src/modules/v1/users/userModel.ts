@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose';
-import { IUserModel } from '../../../../domain/interfaces';
-import { Post } from '../../posts/models/Post';
+import { IUserModel } from '../../../domain/interfaces';
+import { Post } from '../posts/models/Post';
 
 const UserSchema = new Schema<IUserModel>({
   alias: {
@@ -25,35 +25,6 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     required: false,
   },
-  profilePhoto: {
-    type: String,
-    required: false,
-  },
-  description: {
-    type: String,
-    required: false,
-  },
-  school: {
-    type: String,
-    required: false,
-  },
-  address: {
-    type: String,
-    required: false,
-  },
-  job: {
-    type: String,
-    required: false,
-  },
-  gender: {
-    type: String,
-    enum: ['female', 'male', 'other'],
-    default: 'other',
-  },
-  birthDay: {
-    type: String,
-    required: false,
-  },
   isLoginGoogle: {
     type: Boolean,
     default: false,
@@ -66,14 +37,42 @@ const UserSchema = new Schema<IUserModel>({
     type: Boolean,
     default: false,
   },
+  bio: {
+    type: String,
+    required: false,
+  },
+  websiteUrl: {
+    type: String,
+    required: false,
+  },
+  address: {
+    type: String,
+    required: false,
+  },
+  job: {
+    type: String,
+    required: false,
+  },
+  school: {
+    type: String,
+    required: false,
+  },
   emailVerified: {
     type: Boolean,
     default: false,
   },
-  roles: {
+  profilePhoto: {
     type: String,
-    enum: ['normal', 'creator', 'admin'],
-    default: 'normal',
+    required: false,
+  },
+  gender: {
+    type: String,
+    enum: ['female', 'male', 'other'],
+    default: 'other',
+  },
+  birthDay: {
+    type: String,
+    required: false,
   },
   viewers: [
     {
@@ -120,6 +119,11 @@ const UserSchema = new Schema<IUserModel>({
     type: String,
     enum: ['bronze', 'silver', 'gold'],
     default: 'bronze',
+  },
+  roles: {
+    type: String,
+    enum: ['normal', 'creator', 'admin'],
+    default: 'normal',
   },
 }, {
   timestamps: true,

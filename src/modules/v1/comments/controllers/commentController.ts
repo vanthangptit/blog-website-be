@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { appError } from '../../../../utils';
 import { Post } from '../../posts/models/Post';
 import { Comment } from '../models/Comment';
-import { User } from '../../users/models/User';
+import { User } from '../../users/userModel';
 import { startSession } from 'mongoose';
 
 /**

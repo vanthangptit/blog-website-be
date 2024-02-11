@@ -7,6 +7,7 @@ export type UserAward = 'bronze' | 'silver' | 'gold';
 export type Roles = 'normal' | 'creator' | 'admin';
 
 export interface IUserModel extends Document {
+  alias: string
   firstName: string
   lastName: string
   email: string
@@ -14,11 +15,11 @@ export interface IUserModel extends Document {
   isLoginGoogle?: boolean
   isBlocked?: boolean
   isAdmin: boolean
-  description?: string
+  bio?: string
+  websiteUrl?: string
   address?: string
   job?: string
   school?: string
-  alias?: string
   emailVerified: boolean
   profilePhoto?: string
   gender?: Gender

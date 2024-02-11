@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { appError, passwordHash } from '../../../../../utils';
-import { User } from '../../../users/models/User';
+import { User } from '../../../users/userModel';
 import { startSession } from 'mongoose';
 import { nanoid } from 'nanoid';
 import { EmailVerification } from '../../../emails/models/EmailVerification';

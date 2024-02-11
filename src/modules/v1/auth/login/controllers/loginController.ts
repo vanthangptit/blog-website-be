@@ -7,7 +7,7 @@ import {
   setCookie,
   clearCookie,
 } from '../../../../../utils';
-import { User } from '../../../users/models/User';
+import { User } from '../../../users/userModel';
 import {
   createRefreshToken,
 } from '../../refreshToken/services/tokenServices';

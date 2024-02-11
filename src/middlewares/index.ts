@@ -10,7 +10,7 @@ import {
 } from '../utils';
 import conf from '../config';
 import { IFPayloadToken } from '../domain/interfaces';
-import { getUserById } from '../modules/v1/users/services/userServices';
+import { getUserById } from '../modules/v1/users/userServices';
 
 const { accessDomain, accessTokenKey } = conf;
 

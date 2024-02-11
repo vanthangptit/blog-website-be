@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 import { appError } from '../../../../utils';
 import { Category } from '../models/Category';
-import { User } from '../../users/models/User';
+import { User } from '../../users/userModel';
 import { getCategoryById } from '../services/categoryServices';
 
 /**

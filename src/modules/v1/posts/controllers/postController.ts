@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { startSession } from 'mongoose';
 import { appError, verifyToken } from '../../../../utils';
 import { Post } from '../models/Post';
-import { User } from '../../users/models/User';
+import { User } from '../../users/userModel';
 import {
   getPostByShortUrl,
   getPostById

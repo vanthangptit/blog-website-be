@@ -7,7 +7,7 @@ export const profilePhotoValidation = () => checkSchema({
   profilePhoto: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The profilePhoto field is required',
+      errorMessage: 'profilePhoto is required',
     },
     isString: {
       errorMessage: 'The profilePhoto must be a string.',
@@ -34,7 +34,7 @@ export const changePasswordValidation = () => checkSchema({
   newPassword: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The newPassword field is required',
+      errorMessage: 'newPassword is required',
     },
     matches: {
       options: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
@@ -60,7 +60,7 @@ export const firstNameValidation = () => checkSchema({
   firstName: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The firstName field is required',
+      errorMessage: 'firstName is required',
     },
     matches: {
       options: /^[a-zA-Z\-\s]+$/,
@@ -80,7 +80,7 @@ export const lastNameValidation = () => checkSchema({
   lastName: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The lastName field is required',
+      errorMessage: 'lastName is required',
     },
     matches: {
       options: /^[a-zA-Z\-\s]+$/,
@@ -100,7 +100,7 @@ export const addressValidation = () => checkSchema({
   address: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The address must be a string.'
+      errorMessage: 'address is required.'
     },
     matches: {
       options: /^[a-zA-Z0-9,/\-\s]+$/,
@@ -120,7 +120,7 @@ export const jobValidation = () => checkSchema({
   job: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The job must be a string.'
+      errorMessage: 'job is required.'
     },
     matches: {
       options: /^[a-zA-Z0-9@!?&.,/\-\s]+$/,
@@ -140,7 +140,7 @@ export const schoolValidation = () => checkSchema({
   school: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The school must be a string.'
+      errorMessage: 'school is required.'
     },
     matches: {
       options: /^[a-zA-Z0-9\-\s]+$/,
@@ -156,19 +156,30 @@ export const schoolValidation = () => checkSchema({
 /**
  * Validation user description
  */
-export const descriptionValidation = () => checkSchema({
-  description: {
+export const bioValidation = () => checkSchema({
+  bio: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The description must be a string.'
-    },
-    matches: {
-      options: /^[a-zA-Z0-9@!?&.,'"/\-\s]+$/,
-      errorMessage: 'Please enter letter characters, number and [@!?&.,-\'\"] special characters'
+      errorMessage: 'bio is required.'
     },
     isLength: {
       options: { min: 25, max: 500 },
-      errorMessage: 'Description must between 25 - 500 characters'
+      errorMessage: 'Bio must between 25 - 500 characters'
+    }
+  }
+});
+
+/**
+ * Validation user websiteUrl
+ */
+export const websiteUrlValidation = () => checkSchema({
+  websiteUrl: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'websiteUrl is required.'
+    },
+    isString: {
+      errorMessage: 'The websiteUrl must be a string.',
     }
   }
 });
@@ -208,7 +219,7 @@ export const aliasValidation = () => checkSchema({
   alias: {
     in: ['body'],
     notEmpty: {
-      errorMessage: 'The alias must be a string.'
+      errorMessage: 'alias is required.'
     },
     matches: {
       options: /^[a-zA-Z0-9\-\s]+$/,
