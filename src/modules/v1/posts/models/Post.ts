@@ -38,11 +38,6 @@ const PostSchema = new Schema<IPostModel>({
     required: false,
     default: false,
   },
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'Category',
-    // required: [true, 'Post category is required'],
-  },
   comments: [
     {
       type: Schema.Types.ObjectId,

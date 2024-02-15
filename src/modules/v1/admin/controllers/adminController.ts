@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import {
   appError
 } from '../../../../utils';
-import { Category } from '../../categories/models/Category';
 import { Post } from '../../posts/models/Post';
 import { Comment} from '../../comments/models/Comment';
 import { User } from '../../users/userModel';
@@ -102,7 +101,6 @@ export const userDeleteCtrl = async (
 
     await Post.deleteMany({ user: req.body.userAuth.id });
     await Comment.deleteMany({ user: req.body.userAuth.id });
-    await Category.deleteMany({ user: req.body.userAuth.id });
     await User.findByIdAndDelete(req.body.userAuth.id);
 
     return res.json({

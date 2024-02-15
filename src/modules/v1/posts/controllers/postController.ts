@@ -7,9 +7,6 @@ import {
   getPostByShortUrl,
   getPostById
 } from '../services/postServices';
-import {
-  getCategoryById
-} from '../../categories/services/categoryServices';
 import { Token } from '../../auth/refreshToken/models/Token';
 import { IFPayloadToken } from '../../../../domain/interfaces';
 import conf from '../../../../config';
@@ -103,7 +100,7 @@ export const getPostByUserCtrl = async (
     if (!author) return next(appError('Author not found.', 400));
     if (author.isBlocked) return next(appError('Access denied, your account blocked', 403));
 
-    const posts = await Post.find({ user: req.body.userAuth.id  }).populate('category');
+    const posts = await Post.find({ user: req.body.userAuth.id  });
 
     return res.json({
       statusCode: 200,
@@ -301,8 +298,7 @@ export const createPostCtrl = async (
     imageUrl,
     shortUrl,
     writer,
-    isPublished,
-    categoryId,
+    isPublished
   } = req.body;
 
   try {
@@ -310,10 +306,6 @@ export const createPostCtrl = async (
 
     if (!author) return next(appError('Author not found.', 400));
     if (author.isBlocked) return next(appError('Access denied, account blocked', 403));
-
-     const category = await getCategoryById(categoryId);
-     if (!category || category.user.toString() !== req.body.userAuth.id.toString())
-       return next(appError('The category id is invalid', 403));
 
     const postCreated = await Post.create({
       title,
@@ -323,8 +315,7 @@ export const createPostCtrl = async (
       shortUrl,
       writer,
       isPublished,
-      creator: author._id,
-      category: categoryId,
+      creator: author._id
     });
 
     author.posts.push(postCreated);

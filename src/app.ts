@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 
 import userRouter from './modules/v1/users/userRoutes';
 import postRouter from './modules/v1/posts/routes/postRoutes';
-import categoryRouter from './modules/v1/categories/routes/categoryRoutes';
 import commentRouter from './modules/v1/comments/routes/commentRoutes';
 import adminRouter from './modules/v1/admin/routes/adminRoutes';
 import authRouter from './modules/v1/auth/authRoutes';
@@ -46,7 +45,6 @@ const init = async () => {
 
   app.use('/api/v1/users', userRouter);
   app.use('/api/v1/posts', postRouter);
-  app.use('/api/v1/categories', categoryRouter);
   app.use('/api/v1/comments', commentRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/auth', authRouter);

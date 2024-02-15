@@ -63,17 +63,7 @@ export const postValidation = (isCreated: boolean) => {
     }
   };
 
-  if (isCreated) {
-    schema['categoryId'] = {
-      in: ['body'],
-      notEmpty: {
-        errorMessage: 'The categoryId is required',
-      },
-      isString: {
-        errorMessage: 'The categoryId must be a string.',
-      }
-    }
-  } else {
+  if (!isCreated) {
     schema['shortUrl'] = {
       in: ['params'],
       notEmpty: {

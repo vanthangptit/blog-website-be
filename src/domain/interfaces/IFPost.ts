@@ -10,7 +10,6 @@ export interface IPostModel extends Document {
   writer: string
   isPublished: boolean
   isPinned: boolean
-  category: Types.ObjectId
   comments: Types.ObjectId[]
   numViews: Types.ObjectId[]
   hearts: Types.ObjectId[]

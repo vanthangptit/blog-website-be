@@ -1,4 +1,3 @@
-export { ICategoryModel } from './IFCategory';
 export { ICommentModel } from './IFComment';
 export { IPostModel } from './IFPost';
 export { ITokenModel } from './IFToken';
