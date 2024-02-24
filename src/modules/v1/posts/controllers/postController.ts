@@ -10,6 +10,7 @@ import {
 import { Token } from '../../auth/refreshToken/models/Token';
 import { IFPayloadToken } from '../../../../domain/interfaces';
 import conf from '../../../../config';
+import { Tag } from '../../tags/models/Tag';
 
 /**
  * Get posts
@@ -259,10 +260,16 @@ export const getPostByShortUrlCtrl = async (
       .populate({
         path: 'creator',
         select: { password: 0, email: 0 }
+      })
+      .populate({
+        path: 'tags'
       });
     const postRelated = await Post.find({
       shortUrl: { $ne: req.params.shortUrl }
     })
+      .populate({
+        path: 'tags'
+      })
       .limit(5)
       .sort({ createdAt: -1 });
 
@@ -291,6 +298,9 @@ export const createPostCtrl = async (
   res: Response,
   next: NextFunction
 ) => {
+  const session = await startSession();
+  session.startTransaction();
+
   const {
     title,
     excerpt,
@@ -298,10 +308,17 @@ export const createPostCtrl = async (
     imageUrl,
     shortUrl,
     writer,
-    isPublished
+    isPublished,
+    tags
   } = req.body;
+  const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
   try {
+    if (!tags || tags?.length === 0)
+      return next(appError('Tags can not empty', 400));
+    if (tags?.length > 3)
+      return next(appError('Only add up to 3 tags', 400));
+
     const author = await User.findById(req.body.userAuth.id);
 
     if (!author) return next(appError('Author not found.', 400));
@@ -321,12 +338,31 @@ export const createPostCtrl = async (
     author.posts.push(postCreated);
     await author.save();
 
+    const newTags = tags?.map((tag: string) => {
+      return {
+        title: tag,
+        post: postCreated
+      }
+    });
+
+    for (const dataTag of newTags) {
+      const tagCreated = await Tag.findOneAndUpdate({
+        title: dataTag.title
+      }, dataTag, options);
+      tagCreated && postCreated.tags.push(tagCreated._id);
+    }
+    await postCreated.save();
+
+    await session.commitTransaction();
+    await session.endSession();
     return res.json({
       statusCode: 200,
       message: 'The post was created successfully',
       data: postCreated,
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };
@@ -335,6 +371,9 @@ export const createPostCtrl = async (
  * Update post
  */
 export const updatePostCtrl = async (req: Request, res: Response, next: NextFunction) => {
+  const session = await startSession();
+  session.startTransaction();
+
   const {
     title,
     excerpt,
@@ -343,17 +382,22 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
     shortUrl,
     isPublished,
     writer,
+    tags
   } = req.body;
-  const idOrShortUrl = req.params.shortUrl;
+  const options = { upsert: true, new: true, setDefaultsOnInsert: true };
+  if (!tags || tags?.length === 0)
+    return next(appError('Tag can not empty', 400));
+  if (tags?.length > 3)
+    return next(appError('Only add up to 3 tags', 400));
 
   try {
-    const post = await getPostByShortUrl(idOrShortUrl);
+    const post = await getPostById(req.params.id);
     if (!post) return next(appError('The post not found', 404));
     if (post.creator.toString() !== req.body.userAuth.id.toString())
       return next(appError('You are not allowed to update this post', 403));
 
-    await Post.findOneAndUpdate({
-      $or:[ { id: idOrShortUrl }, { shortUrl: idOrShortUrl } ]
+    const postUpdated = await Post.findOneAndUpdate({
+      $or:[ { _id: req.params.id } ]
     }, {
       title,
       excerpt,
@@ -364,11 +408,35 @@ export const updatePostCtrl = async (req: Request, res: Response, next: NextFunc
       writer,
     }, { new: true });
 
+    if (postUpdated) {
+      await Post.deleteMany({ post: postUpdated._id });
+      postUpdated.tags = [];
+      const newTags = tags?.map((tag: string) => {
+        return {
+          title: tag,
+          post: postUpdated
+        }
+      });
+
+      for (const dataTag of newTags) {
+        const tagCreated = await Tag.findOneAndUpdate({
+          title: dataTag.title
+        }, dataTag, options);
+        tagCreated && postUpdated.tags.push(tagCreated._id);
+      }
+      await postUpdated.save();
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
     return res.json({
       statusCode: 200,
       message: 'Post updated',
     });
   } catch (e: any) {
+    await session.abortTransaction();
+    await session.endSession();
     return next(appError(e.message));
   }
 };

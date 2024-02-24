@@ -13,6 +13,7 @@ import { connectDB } from './database/database';
 
 import conf from './config';
 import { client } from './config/caching';
+import tagRouter from './modules/v1/tags/routes/tagRoutes';
 
 const app: Application = express();
 const { port } = conf;
@@ -48,6 +49,7 @@ const init = async () => {
   app.use('/api/v1/comments', commentRouter);
   app.use('/api/v1/admin', adminRouter);
   app.use('/api/v1/auth', authRouter);
+  app.use('/api/v1/tags', tagRouter);
 
   // Error handlers middleware
   app.use(globalErrHandler);

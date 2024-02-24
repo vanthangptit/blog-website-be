@@ -90,7 +90,7 @@ postRouter.post(
  * @method PUT::Updated post
  */
 postRouter.put(
-  '/:shortUrl',
+  '/:id',
   postValidation(false),
   isValidationResult,
   isAuthenticated,

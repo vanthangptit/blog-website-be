@@ -38,6 +38,12 @@ const PostSchema = new Schema<IPostModel>({
     required: false,
     default: false,
   },
+  tags: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Tag',
+    }
+  ],
   comments: [
     {
       type: Schema.Types.ObjectId,

@@ -64,16 +64,24 @@ export const postValidation = (isCreated: boolean) => {
   };
 
   if (!isCreated) {
-    schema['shortUrl'] = {
+    schema['id'] = {
       in: ['params'],
       notEmpty: {
-        errorMessage: 'The shortUrl is required',
-      },
-      isString: {
-        errorMessage: 'The shortUrl must be a string.',
+        errorMessage: 'The post is invalid',
       }
-    }
+    };
   }
+
+  schema['tags'] = {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'The tags is required',
+    },
+    isArray: {
+      options: { min: 1, max: 4 },
+      errorMessage: 'Tags can not be empty',
+    }
+  };
 
   return checkSchema(schema);
 };
