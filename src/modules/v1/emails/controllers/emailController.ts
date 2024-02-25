@@ -6,7 +6,7 @@ import { EmailVerification } from '../models/EmailVerification';
 import {
   appError
 } from '../../../../utils';
-import { User } from '../../users/models/User';
+import { User } from '../../users/userModel';
 
 /**
  * Verify email
