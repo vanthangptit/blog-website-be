@@ -14,13 +14,7 @@ import { Tag } from '../../tags/models/Tag';
 
 /**
  * Get posts
- */
-/**
- * @todo: Maintain
- * @param req
- * @param res
- * @param next
- */
+*/
 export const getAllPostCtrl = async (
   req: Request,
   res: Response,
@@ -30,7 +24,9 @@ export const getAllPostCtrl = async (
   let filteredPosts;
 
   try {
-    const posts = await Post.find({})
+    const posts = await Post.find({
+      isPublished: true
+    })
       .populate({
         path: 'creator',
         select: { password: 0, email: 0, emailVerified: 0 }
@@ -38,7 +34,8 @@ export const getAllPostCtrl = async (
       .populate({
         path: 'tags',
         select: { password: 0, email: 0 }
-      });
+      })
+      .sort({ createdAt: -1 });
 
     if (req.body.userAuth) {
       filteredPosts = posts.filter(post => {
@@ -109,7 +106,8 @@ export const getPostByUserCtrl = async (
       .populate({
         path: 'tags',
         select: { password: 0, email: 0 }
-      });
+      })
+      .sort({ createdAt: -1 });
 
     return res.json({
       statusCode: 200,

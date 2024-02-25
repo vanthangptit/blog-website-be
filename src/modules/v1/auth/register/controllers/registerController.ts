@@ -28,6 +28,7 @@ export const registerCtrl = async (
       firstName,
       lastName,
       email,
+      alias: email.toString().split('@')[0],
       password: await passwordHash(password)
     }], { session  });
 
