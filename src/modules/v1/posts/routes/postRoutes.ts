@@ -24,6 +24,11 @@ import {
 const postRouter = express.Router();
 
 /**
+ * @method GET::Get all post
+ */
+postRouter.get('/', isGetUserAuth, getAllPostCtrl);
+
+/**
  * @method POST::Saves
  */
 postRouter.post(
@@ -51,11 +56,6 @@ postRouter.post(
   isAuthenticated,
   toggleAssociateCtrl
 );
-
-/**
- * @method GET::Get all post
- */
-postRouter.get('/', isGetUserAuth, getAllPostCtrl);
 
 /**
  * @method GET::Get posts by userId

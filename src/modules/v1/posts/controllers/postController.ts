@@ -34,6 +34,10 @@ export const getAllPostCtrl = async (
       .populate({
         path: 'creator',
         select: { password: 0, email: 0, emailVerified: 0 }
+      })
+      .populate({
+        path: 'tags',
+        select: { password: 0, email: 0 }
       });
 
     if (req.body.userAuth) {
@@ -98,10 +102,14 @@ export const getPostByUserCtrl = async (
 ) => {
   try {
     const author = await User.findById(req.body.userAuth.id);
-    if (!author) return next(appError('Author not found.', 400));
+    if (!author) return next(appError('Author is invalid.', 400));
     if (author.isBlocked) return next(appError('Access denied, your account blocked', 403));
 
-    const posts = await Post.find({ user: req.body.userAuth.id  });
+    const posts = await Post.find({ creator: req.body.userAuth.id  })
+      .populate({
+        path: 'tags',
+        select: { password: 0, email: 0 }
+      });
 
     return res.json({
       statusCode: 200,
