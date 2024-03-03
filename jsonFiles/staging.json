@@ -1,0 +1,19 @@
+{
+  "accessDomain": [ "https://nguyenthangdev.com" ],
+  "email": {
+    "from": "no-reply@nguyenthangdev.com",
+    "subject": {
+      "login": "Welcome to NTD, --Username--! Confirm Your Email",
+      "resetPassword": "Welcome to NTD, --Username--! Confirm Your Email"
+    },
+    "name": "NTD",
+    "color": "#bc2e1d",
+    "clickTrackingValue": "",
+    "url": "https://nguyenthangdev.com",
+    "urlLogin": "https://nguyenthangdev.com/login",
+    "mailVerificationUrl": "https://account.nguyenthangdev.com/auth/verify",
+    "mailChangeUrl": "https://account.nguyenthangdev.com/auth/change-email",
+    "resetPasswordUrl": "https://account.nguyenthangdev.com/auth/reset-password",
+    "termsOfServiceUrl": "https://nguyenthangdev.com/terms"
+  }
+}

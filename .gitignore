@@ -1,0 +1,54 @@
+# IDE
+.idea
+.vscode
+
+##### Sublime Text
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-project
+*.sublime-workspace
+
+##### OSX
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+##### Windows
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder conf file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+
+# Windows shortcuts
+*.lnk
+
+# Ignore paths that contain user-generated content.
+.tmp
+.cache
+
+# debug file
+npm-debug.log*
+
+# app
+.env
+node_modules
+logs
+dist
+yarn-error.log

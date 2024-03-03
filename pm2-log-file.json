@@ -1,0 +1,24 @@
+{
+  "apps" : [{
+    "name": "blog-be",
+    "script": "./dist/app.js",
+    "output": "./logs/app.log",
+    "error": "./logs/app.err",
+    "log_date_format": "DD-MM-YYYY",
+    "merge_logs": true,
+    "min_uptime": 32000,
+    "watch": [ "./src" ],
+    "watch_options": {
+      "usePolling": true
+    },
+    "env_development": {
+      "NODE_ENV": "development"
+    },
+    "env_staging": {
+      "NODE_ENV": "uat"
+    },
+    "env_production" : {
+      "NODE_ENV": "production"
+    }
+  }]
+}

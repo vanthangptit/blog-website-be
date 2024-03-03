@@ -1,0 +1,16 @@
+version: '3'
+services:
+  blog-app:
+    image: blog-website
+    container_name: blog-website-container
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/usr/local/nonroot/app/:cached
+      - ./logs:/var/log/app/:cached
+      - /usr/local/nonroot/app/node_modules
+    command: yarn run serve
+    env_file:
+      - .env
+    ports:
+      - "9700:9700"
